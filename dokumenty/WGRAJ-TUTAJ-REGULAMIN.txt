@@ -1,0 +1,2 @@
+Wgraj tutaj regulamin klubu jako PDF, np. regulamin-ks-turow.pdf,
+a w panelu (Informacje praktyczne → Plik regulaminu) wpisz: dokumenty/regulamin-ks-turow.pdf
