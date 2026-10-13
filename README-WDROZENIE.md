@@ -125,7 +125,19 @@ Darmowy limit Workers AI wystarcza na tłumaczenie całej strony kilka razy dzie
 - Dozwolone źródła: serwisy PZKosz i DZKosz. Jeśli serwis zmieni układ strony, odczyt może wymagać poprawki.
 
 ### Facebook
-Sekcja z oficjalną wtyczką strony Facebooka (Wizerunek → Facebook). Domyślnie wpisy wczytują się po kliknięciu (RODO).
+Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
+- **Wpisy w wyglądzie strony** (domyślnie): najpierw treść wpisu, zdjęcie pod spodem (albo nad — do wyboru), „Czytaj więcej” przy długich wpisach, liczba wpisów 1–20. Wpisy pobiera serwer strony co 15 minut, zdjęcia idą przez serwer strony (odwiedzający nie łączy się z Facebookiem — bez cookies, zgodnie z RODO). Wymaga **tokenu strony**.
+- **Oficjalna wtyczka Facebooka**: wygląd Facebooka (kolejności treść/zdjęcie nie da się w niej zmienić). Działa też automatycznie jako zapas, gdy tokenu brak albo Facebook nie odpowiada.
+
+**Jak zdobyć token strony (jednorazowo, ok. 10 minut):**
+1. Wejdź na https://developers.facebook.com → „Moje aplikacje” → „Utwórz aplikację” (typ: Firma / „Inne”). Konto musi być administratorem strony klubu na Facebooku.
+2. Otwórz **Narzędzia → Graph API Explorer**, wybierz swoją aplikację, kliknij „Get Token → Get Page Access Token”, zaznacz stronę klubu i uprawnienia `pages_show_list`, `pages_read_engagement`, `pages_read_user_content`.
+3. Token z Explorera ważny jest ok. 1 godziny — zamień go na stały: w **Access Token Debugger** (Narzędzia → Debuger tokenów dostępu) kliknij „Extend Access Token”, a następnie w Graph API Explorer z tym długim tokenem wywołaj `me/accounts` — pole `access_token` przy stronie klubu to **token strony bez daty wygaśnięcia**.
+4. Wklej go w panelu: Facebook → „Połączenie z Facebookiem” → **Zapisz token i pobierz wpisy**. Token zapisuje się tylko w bazie KV (nie trafia na stronę ani do kopii zapasowej). Alternatywnie dodaj go w Cloudflare jako zmienną szyfrowaną `FB_TOKEN`.
+Uwaga: zmiana hasła do konta Facebook administratora może unieważnić token — wtedy wklej nowy.
+
+### Kolejność sekcji
+Panel → Klub → **Sekcje strony**: strzałki ▲▼ ustawiają, która sekcja jest nad którą (pierwszy ekran zawsze na górze, stopka na dole). „Ułóż menu w tej samej kolejności” porządkuje górne menu tak samo; „Przywróć domyślną kolejność” cofa zmiany. Kolejność zapisuje się na serwerze i widzą ją wszyscy odwiedzający.
 
 ### Formularz
 Telefon z numerem kierunkowym (+48 / +49 / +44 / +420), tylko cyfry, długość 9 (PL) lub 7–15. Restrykcyjna walidacja e-maila, imienia i treści na żywo i przy wysyłce; czerwone komunikaty; blokada wielokrotnego wysłania.
