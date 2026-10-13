@@ -27,6 +27,7 @@ Panel: login **admin**, hasło **kosz2026** (wersja demonstracyjna — zmiany za
 | Drużyny młodzieżowe U13/U15/U17 | #mlodziez | koszykówka dla dzieci i młodzieży Zgorzelec |
 | Grupy treningowe | #grupy | treningi koszykówki dla dzieci Zgorzelec |
 | Galeria / Instagram / Certyfikaty | #galeria #instagram #certyfikaty | (zaufanie) |
+| Sponsorzy / Partnerzy (logotypy z linkami) | #sponsorzy #partnerzy | (zaufanie) |
 | Informacje praktyczne | #informacje | hala, składki, regulamin |
 | Kontakt | #kontakt | NAP, mapa, godziny biura |
 
@@ -58,3 +59,10 @@ Dane strukturalne: `SportsClub` (sport: Basketball) + `WebSite`. Bez ocen i opin
 
 ## Wdrożenie (Cloudflare Pages)
 Wgraj zawartość ZIP (folder główny = ten, w którym jest `index.html`) jako projekt Pages, podłącz domenę `ksturow.eu` (+ przekierowanie `www` → bez www).
+
+## Panel — nowe funkcje
+- **Drużyny → Wszystkie drużyny:** dodawanie nowych grup zawodników (np. U11, U19, drużyna kobiet) jako zakładek w sekcji młodzieżowej lub seniorskiej; przełącznik „Pokazuj numery zawodników”.
+- Zawodnicy: zdjęcie (także młodzież), pozycja z listy lub wpisana własna.
+- **Sponsorzy / Partnerzy:** logo (PNG/SVG z przezroczystością), link, podpis, wyróżnienie.
+- **Ustawienia → Wersje językowe:** włączanie/wyłączanie EN i DE. Na stałe dla wszystkich: ustaw `settings.langs` w `src/data-club.js` i uruchom `node build.js` — foldery /en/ lub /de/ nie zostaną wygenerowane.
+- **Podgląd na żywo** obok formularza: pomniejszona edytowana sekcja + jej miejsce na stronie.
