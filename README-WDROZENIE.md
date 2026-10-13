@@ -66,3 +66,16 @@ Wgraj zawartość ZIP (folder główny = ten, w którym jest `index.html`) jako 
 - **Sponsorzy / Partnerzy:** logo (PNG/SVG z przezroczystością), link, podpis, wyróżnienie.
 - **Ustawienia → Wersje językowe:** włączanie/wyłączanie EN i DE. Na stałe dla wszystkich: ustaw `settings.langs` w `src/data-club.js` i uruchom `node build.js` — foldery /en/ lub /de/ nie zostaną wygenerowane.
 - **Podgląd na żywo** obok formularza: pomniejszona edytowana sekcja + jej miejsce na stronie.
+
+## Formularz kontaktowy — wysyłka
+Panel → Klub → **Formularz kontaktowy** → „Sposób wysyłki”:
+- **Program pocztowy (mailto)** — domyślnie. Bez serwera: otwiera pocztę odwiedzającego z gotową wiadomością na adres odbiorcy; wysyła ją sam odwiedzający.
+- **FormSubmit.co** — wysyłka bezpośrednio ze strony na podany adres. Pierwsza wiadomość przyniesie e-mail aktywacyjny (kliknąć link). Bezpłatne.
+- **Własny adres obsługi** — np. Formspree / Web3Forms / Cloudflare Worker (JSON POST).
+Ochrona przed botami: ukryte pole-pułapka, minimalny czas wypełniania, opcjonalne działanie matematyczne. Limit 8 pól — formularz zawsze mieści się na ekranie (wysokość pola wiadomości dopasowuje się automatycznie).
+
+## Inne ustawienia w panelu
+- **Menu strony** — kolejność pozycji (▲▼), ukrywanie z menu, własne nazwy (menu i stopka).
+- **Opisy osób** — pole „Opis / historia” przy zawodnikach i trenerach; kliknięcie otwiera okienko. Wyłącznik: Drużyny → Wszystkie drużyny.
+- **Godziny biura** — przełącznik „Pokazuj godziny otwarcia biura na stronie”.
+- **Osiągnięcia** — rodzaj z listy albo własny tekst (etykieta na kafelku).
