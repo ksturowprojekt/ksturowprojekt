@@ -79,3 +79,6 @@ Ochrona przed botami: ukryte pole-pułapka, minimalny czas wypełniania, opcjona
 - **Opisy osób** — pole „Opis / historia” przy zawodnikach i trenerach; kliknięcie otwiera okienko. Wyłącznik: Drużyny → Wszystkie drużyny.
 - **Godziny biura** — przełącznik „Pokazuj godziny otwarcia biura na stronie”.
 - **Osiągnięcia** — rodzaj z listy albo własny tekst (etykieta na kafelku).
+- **Nazwa w nagłówku** obok logo (pogrubiona nazwa + podpis) — Wizerunek → Strona główna.
+- **Informacje praktyczne** — bloki z nagłówkiem, treścią i linkiem (dodawanie, usuwanie, kolejność) + link pod całą sekcją.
+- **Nabory** — powiązana grupa z listy albo własna nazwa (pojawia się na przycisku „Zapisz się: …”).

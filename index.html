@@ -536,6 +536,27 @@ dialog.bio::backdrop{background:rgba(36,30,32,.65)}
 .pl--bio .pl__more{bottom:8px}
 #kontakt .z--a{align-items:start}
 
+/* ===== Kontakt: kolumna z danymi tej samej wysokości co formularz ===== */
+#kontakt .z--a{align-items:stretch}
+#kontakt .contact{display:flex;flex-direction:column;gap:12px}
+#kontakt .contact .sec-head{margin-bottom:0}
+#kontakt .contact .sec-head h2{margin-bottom:.3em}
+#kontakt .contact .sec-intro p{margin:0}
+.contact__list{margin:0;gap:10px 18px}
+@media(min-width:480px){.contact__list{grid-template-columns:1fr 1fr}.contact__list>div:nth-child(3){grid-column:1/-1}}
+.contact__list dd{font-size:1rem}
+.contact__list address{line-height:1.45}
+.contact__act{display:flex;flex-wrap:wrap;gap:8px}
+.contact .btn{margin:0}
+.contact__soc{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px}
+.contact__soc-h{margin:0}
+@media(min-width:900px){#kontakt .contact{justify-content:space-between}}
+.info__more{margin:20px 0 0;text-align:center}
+.info__item .btn{margin-top:4px}
+#kontakt .z--a>.z__media{display:flex}
+#kontakt .z--a .form{width:100%;align-content:start}
+@media(min-width:900px){#kontakt .z--a .form{height:100%}}
+
 </style>
 <script type="application/ld+json" id="ld">{"@context":"https://schema.org","@graph":[{"@type":"SportsClub","@id":"https://ksturow.eu/#klub","name":"KS Turów","sport":"Basketball","url":"https://ksturow.eu/","logo":"https://ksturow.eu/img/ks-turow-zgorzelec-logo-512.png","image":"https://ksturow.eu/img/og-image.jpg","description":"KS Turów – klub koszykarski w Zgorzelcu, mistrz Polski 2014. Drużyna seniorów, grupy młodzieżowe U13–U17, historia klubu i nabory. Zapraszamy!","address":{"@type":"PostalAddress","addressLocality":"Zgorzelec","addressCountry":"PL","streetAddress":"ul. Lubańska 9A","postalCode":"59-900"},"areaServed":[{"@type":"City","name":"Zgorzelec"},{"@type":"Country","name":"Polska"}],"telephone":"+48 534 788 402","hasMap":"https://www.google.com/maps/search/?api=1&query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec"},{"@type":"WebSite","@id":"https://ksturow.eu/#www","url":"https://ksturow.eu/","name":"KS Turów","inLanguage":"pl","publisher":{"@id":"https://ksturow.eu/#klub"}}]}</script>
 <!-- GOOGLE ANALYTICS 4: NIE włączaj bez zgody użytkownika (RODO / ePrivacy).
@@ -551,7 +572,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
 <div id="topbar" class="topbar" role="region" aria-label="Komunikaty klubu"><div class="topbar__in wrap"><span class="topbar__count" aria-hidden="true"></span><ul class="topbar__list" aria-live="off"><li class="topbar__item is-on"><a href="#aktualnosci">Nowa strona internetowa KS Turów <span aria-hidden="true">→</span></a></li></ul></div></div>
 <header class="site-header">
 <div class="wrap hd">
-<a class="brand" href="#start"><img src="img/ks-turow-zgorzelec-logo-160.webp" width="52" height="52" alt="Logo KS Turów"><span><b>KS Turów</b><small>Zgorzelec</small></span></a>
+<a class="brand" id="brand" href="#start"><img src="img/ks-turow-zgorzelec-logo-160.webp" width="52" height="52" alt="Logo KS Turów"><span><b>KS Turów</b><small>Zgorzelec</small></span></a>
 <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav"><span aria-hidden="true"></span>Menu</button>
 <nav class="site-nav" id="site-nav" aria-label="Menu główne">
 <ul id="menu-list"><li><a href="#aktualnosci">Aktualności</a></li><li><a href="#historia">Historia</a></li><li><a href="#osiagniecia">Osiągnięcia</a></li><li><a href="#zespol">Seniorzy</a></li><li><a href="#mlodziez">Młodzież</a></li><li><a href="#grupy">Treningi</a></li><li><a href="#galeria">Galeria</a></li><li><a href="#sponsorzy">Sponsorzy</a></li><li><a href="#kontakt">Kontakt</a></li></ul>
@@ -575,8 +596,8 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
 <section id="certyfikaty" class="sec sec--light" aria-labelledby="certyfikaty-t"><div class="wrap"><header class="sec-head"><h2 id="certyfikaty-t">Certyfikaty i dyplomy</h2></header><ul class="certs"><li class="cert"><div class="ph" role="img" aria-label="Miejsce na zdjęcie: skan certyfikatu / dyplomu"><span>[ZDJĘCIE: skan certyfikatu / dyplomu]</span></div><h3><mark class="todo">[DO UZUPEŁNIENIA]</mark> — nazwa certyfikatu / dyplomu</h3></li></ul></div></section>
 <section id="sponsorzy" class="sec sec--light" aria-labelledby="sponsorzy-t"><div class="wrap"><header class="sec-head"><h2 id="sponsorzy-t">Sponsorzy</h2><div class="sec-intro"><p>Dziękujemy firmom, które wspierają zgorzelecką koszykówkę.</p></div></header><ul class="logos"><li class="logo logo--big"><div><span class="logo__img"><span class="logo__name">PGE GiEK</span></span><span class="logo__lab">Sponsor tytularny drużyny</span><span class="sr"></span></div></li></ul></div></section>
 <section id="partnerzy" class="sec sec--warm" aria-labelledby="partnerzy-t" hidden></section>
-<section id="informacje" class="sec sec--green" aria-labelledby="informacje-t"><div class="wrap"><header class="sec-head"><h2 id="informacje-t">Informacje praktyczne</h2></header><div class="info"><div class="info__item"><h3>Hala i treningi</h3><p><strong>Drużyna seniorów:</strong> PGE Turów Arena, ul. Lubańska 9A, 59-900 Zgorzelec.</p><p><strong>Drużyny młodzieżowe (U13, U15, U17):</strong> Hala CSR, ul. Maratońska 2, 59-900 Zgorzelec.</p></div><div class="info__item"><h3>Parking</h3><p><mark class="todo">[DO UZUPEŁNIENIA]</mark></p></div><div class="info__item"><h3>Płatności i składki</h3><p><mark class="todo">[DO UZUPEŁNIENIA]</mark> — zasady opłacania składek.</p></div><div class="info__item"><h3>Dostępność</h3><p><mark class="todo">[DO UZUPEŁNIENIA]</mark></p></div><div class="info__item info__item--rules"><h3>Regulamin</h3><p>Regulamin klubu jest dostępny do pobrania poniżej.</p><p>Plik regulaminu: <mark class="todo">[DO UZUPEŁNIENIA]</mark></p></div></div></div></section>
-<section id="kontakt" class="sec sec--warm" aria-labelledby="kontakt-t"><div class="wrap"><div class="z z--a"><div class="z__text contact"><header class="sec-head"><h2 id="kontakt-t">Kontakt i zapisy</h2><div class="sec-intro"><p>Chętnie odpowiemy na pytania o treningi i nabory.</p></div></header><dl class="contact__list"><div><dt>Telefon</dt><dd><a href="tel:+48534788402" data-call>+48 534 788 402</a></dd></div><div><dt>E-mail</dt><dd><mark class="todo">[DO UZUPEŁNIENIA: e-mail klubu]</mark></dd></div><div><dt>Adres</dt><dd><address>KS Turów<br>ul. Lubańska 9A, 59-900 Zgorzelec<br>PGE Turów Arena</address><a href="https://www.google.com/maps/search/?api=1&amp;query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec" target="_blank" rel="noopener" data-maps>Dojazd w Mapach Google</a></dd></div></dl><a class="btn btn--primary" href="tel:+48534788402" data-call>Zadzwoń</a> <p class="contact__soc-h">Klub w internecie</p><ul class="soc"><li><span class="soc-todo" title="Facebook [LINK DO UZUPEŁNIENIA]"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v9h4v-9h3l.5-4h-3.5V8.8c0-.5.3-.8.5-.8z"/></svg></span></li><li><span class="soc-todo" title="Instagram [LINK DO UZUPEŁNIENIA]"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.3A4.7 4.7 0 1 0 12 16.7 4.7 4.7 0 0 0 12 7.3zm0 7.7a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm6-7.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0zM12 3.6c2.7 0 3 0 4.1.1 2.7.1 4 1.4 4.1 4.1.1 1.1.1 1.4.1 4.2s0 3-.1 4.1c-.1 2.7-1.4 4-4.1 4.1-1.1.1-1.4.1-4.1.1s-3 0-4.1-.1c-2.8-.1-4-1.4-4.1-4.1C3.7 15 3.7 14.7 3.7 12s0-3 .1-4.1C3.9 5.1 5.2 3.8 7.9 3.7 9 3.6 9.3 3.6 12 3.6zM12 2c-2.7 0-3.1 0-4.2.1C4.2 2.2 2.2 4.2 2.1 7.8 2 8.9 2 9.3 2 12s0 3.1.1 4.2c.2 3.6 2.1 5.6 5.7 5.7 1.1.1 1.5.1 4.2.1s3.1 0 4.2-.1c3.6-.2 5.6-2.1 5.7-5.7.1-1.1.1-1.5.1-4.2s0-3.1-.1-4.2c-.2-3.6-2.1-5.6-5.7-5.7C15.1 2 14.7 2 12 2z"/></svg></span></li><li><span class="soc-todo" title="Profil Firmy w Google [LINK DO UZUPEŁNIENIA]"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span></li></ul></div><div class="z__media"><form class="form" id="contact-form" novalidate><div class="form__f form__f--half"><label for="f-name">Imię i nazwisko <span class="req" aria-hidden="true">*</span></label><input type="text" id="f-name" name="name" data-label="Imię i nazwisko" required data-req autocomplete="name"><span class="form__err" id="f-name-err"></span></div><div class="form__f form__f--half"><label for="f-email">E-mail <span class="req" aria-hidden="true">*</span></label><input type="email" id="f-email" name="email" data-label="E-mail" required data-req autocomplete="email"><span class="form__err" id="f-email-err"></span></div><div class="form__f form__f--half"><label for="f-phone">Telefon</label><input type="tel" id="f-phone" name="phone" data-label="Telefon" autocomplete="tel"><span class="form__err" id="f-phone-err"></span></div><div class="form__f form__f--half"><label for="f-subject">Temat</label><select id="f-subject" name="subject" data-label="Temat"><option>Pytanie do klubu</option><option>Zapis na trening</option><option>Pytanie o nabór</option></select><span class="form__err" id="f-subject-err"></span></div><div class="form__f form__f--full"><label for="f-message">Wiadomość <span class="req" aria-hidden="true">*</span></label><textarea id="f-message" name="message" data-label="Wiadomość" required data-req rows="4"></textarea><span class="form__err" id="f-message-err"></span></div><div class="form__hp" aria-hidden="true"><label for="f-website">Nie wypełniaj tego pola</label><input id="f-website" name="_gotcha" tabindex="-1" autocomplete="off"></div><div class="form__c form__f--full"><input type="checkbox" id="f-consent" name="consent" required data-req><label for="f-consent">Wyrażam zgodę na przetwarzanie podanych danych w celu udzielenia odpowiedzi. <span class="req" aria-hidden="true">*</span> <small>(Polityka prywatności <mark class="todo">[DO UZUPEŁNIENIA]</mark>)</small></label></div><div class="form__foot form__f--full"><button class="btn btn--primary" type="submit">Wyślij wiadomość</button><p class="form__msg" role="status" aria-live="polite"></p></div></form></div></div><div class="z z--b contact__row2"><div class="z__media"><div class="map" data-map="https://www.google.com/maps?q=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec&amp;output=embed"><p>Mapa Google wczyta się po kliknięciu.</p><button type="button" class="btn btn--primary" data-map-load>Pokaż mapę</button><a href="https://www.google.com/maps/search/?api=1&amp;query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec" target="_blank" rel="noopener" data-maps>Dojazd w Mapach Google</a></div></div><div class="z__text"><h3>Godziny biura klubu</h3><span class="status status--open" data-status><span class="status__dot" aria-hidden="true"></span><span class="status__t">Otwarte teraz · do 20:00</span></span><table class="hours"><caption class="sr">Godziny biura klubu</caption><tbody><tr><th scope="row">Poniedziałek</th><td>16:00–20:00</td></tr><tr class="is-today" aria-current="date"><th scope="row">Wtorek</th><td>16:00–20:00</td></tr><tr><th scope="row">Środa</th><td>16:00–20:00</td></tr><tr><th scope="row">Czwartek</th><td>16:00–20:00</td></tr><tr><th scope="row">Piątek</th><td>16:00–20:00</td></tr><tr><th scope="row">Sobota</th><td>nieczynne</td></tr><tr><th scope="row">Niedziela</th><td>nieczynne</td></tr></tbody></table><div class="changes"><h4>Zmiany w godzinach</h4><ul><li><strong>1 listopada</strong> — nieczynne (Wszystkich Świętych)</li><li><strong>11 listopada</strong> — nieczynne (Narodowe Święto Niepodległości)</li></ul></div><p class="note">Godziny przykładowe — <mark class="todo">[DO UZUPEŁNIENIA]</mark></p></div></div></div></section>
+<section id="informacje" class="sec sec--green" aria-labelledby="informacje-t"><div class="wrap"><header class="sec-head"><h2 id="informacje-t">Informacje praktyczne</h2></header><div class="info"><div class="info__item"><h3>Hala i treningi</h3><p><strong>Drużyna seniorów:</strong> PGE Turów Arena, ul. Lubańska 9A, 59-900 Zgorzelec.</p><p><strong>Drużyny młodzieżowe (U13, U15, U17):</strong> Hala CSR, ul. Maratońska 2, 59-900 Zgorzelec.</p></div><div class="info__item"><h3>Parking</h3><p><mark class="todo">[DO UZUPEŁNIENIA]</mark></p></div><div class="info__item"><h3>Płatności i składki</h3><p><mark class="todo">[DO UZUPEŁNIENIA]</mark> — zasady opłacania składek.</p></div><div class="info__item"><h3>Dostępność</h3><p><mark class="todo">[DO UZUPEŁNIENIA]</mark></p></div><div class="info__item"><h3>Regulamin</h3><p>Regulamin klubu jest dostępny do pobrania poniżej. Plik regulaminu: <mark class="todo">[DO UZUPEŁNIENIA]</mark></p></div></div></div></section>
+<section id="kontakt" class="sec sec--warm" aria-labelledby="kontakt-t"><div class="wrap"><div class="z z--a"><div class="z__text contact"><header class="sec-head"><h2 id="kontakt-t">Kontakt i zapisy</h2><div class="sec-intro"><p>Chętnie odpowiemy na pytania o treningi i nabory.</p></div></header><dl class="contact__list"><div><dt>Telefon</dt><dd><a href="tel:+48534788402" data-call>+48 534 788 402</a></dd></div><div><dt>E-mail</dt><dd><mark class="todo">[DO UZUPEŁNIENIA: e-mail klubu]</mark></dd></div><div><dt>Adres</dt><dd><address>KS Turów<br>ul. Lubańska 9A, 59-900 Zgorzelec<br>PGE Turów Arena</address><a href="https://www.google.com/maps/search/?api=1&amp;query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec" target="_blank" rel="noopener" data-maps>Dojazd w Mapach Google</a></dd></div></dl><div class="contact__act"><a class="btn btn--primary" href="tel:+48534788402" data-call>Zadzwoń</a></div><div class="contact__soc"><p class="contact__soc-h">Klub w internecie</p><ul class="soc"><li><span class="soc-todo" title="Facebook [LINK DO UZUPEŁNIENIA]"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v9h4v-9h3l.5-4h-3.5V8.8c0-.5.3-.8.5-.8z"/></svg></span></li><li><span class="soc-todo" title="Instagram [LINK DO UZUPEŁNIENIA]"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.3A4.7 4.7 0 1 0 12 16.7 4.7 4.7 0 0 0 12 7.3zm0 7.7a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm6-7.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0zM12 3.6c2.7 0 3 0 4.1.1 2.7.1 4 1.4 4.1 4.1.1 1.1.1 1.4.1 4.2s0 3-.1 4.1c-.1 2.7-1.4 4-4.1 4.1-1.1.1-1.4.1-4.1.1s-3 0-4.1-.1c-2.8-.1-4-1.4-4.1-4.1C3.7 15 3.7 14.7 3.7 12s0-3 .1-4.1C3.9 5.1 5.2 3.8 7.9 3.7 9 3.6 9.3 3.6 12 3.6zM12 2c-2.7 0-3.1 0-4.2.1C4.2 2.2 2.2 4.2 2.1 7.8 2 8.9 2 9.3 2 12s0 3.1.1 4.2c.2 3.6 2.1 5.6 5.7 5.7 1.1.1 1.5.1 4.2.1s3.1 0 4.2-.1c3.6-.2 5.6-2.1 5.7-5.7.1-1.1.1-1.5.1-4.2s0-3.1-.1-4.2c-.2-3.6-2.1-5.6-5.7-5.7C15.1 2 14.7 2 12 2z"/></svg></span></li><li><span class="soc-todo" title="Profil Firmy w Google [LINK DO UZUPEŁNIENIA]"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span></li></ul></div></div><div class="z__media"><form class="form" id="contact-form" novalidate><div class="form__f form__f--half"><label for="f-name">Imię i nazwisko <span class="req" aria-hidden="true">*</span></label><input type="text" id="f-name" name="name" data-label="Imię i nazwisko" required data-req autocomplete="name"><span class="form__err" id="f-name-err"></span></div><div class="form__f form__f--half"><label for="f-email">E-mail <span class="req" aria-hidden="true">*</span></label><input type="email" id="f-email" name="email" data-label="E-mail" required data-req autocomplete="email"><span class="form__err" id="f-email-err"></span></div><div class="form__f form__f--half"><label for="f-phone">Telefon</label><input type="tel" id="f-phone" name="phone" data-label="Telefon" autocomplete="tel"><span class="form__err" id="f-phone-err"></span></div><div class="form__f form__f--half"><label for="f-subject">Temat</label><select id="f-subject" name="subject" data-label="Temat"><option>Pytanie do klubu</option><option>Zapis na trening</option><option>Pytanie o nabór</option></select><span class="form__err" id="f-subject-err"></span></div><div class="form__f form__f--full"><label for="f-message">Wiadomość <span class="req" aria-hidden="true">*</span></label><textarea id="f-message" name="message" data-label="Wiadomość" required data-req rows="4"></textarea><span class="form__err" id="f-message-err"></span></div><div class="form__hp" aria-hidden="true"><label for="f-website">Nie wypełniaj tego pola</label><input id="f-website" name="_gotcha" tabindex="-1" autocomplete="off"></div><div class="form__c form__f--full"><input type="checkbox" id="f-consent" name="consent" required data-req><label for="f-consent">Wyrażam zgodę na przetwarzanie podanych danych w celu udzielenia odpowiedzi. <span class="req" aria-hidden="true">*</span> <small>(Polityka prywatności <mark class="todo">[DO UZUPEŁNIENIA]</mark>)</small></label></div><div class="form__foot form__f--full"><button class="btn btn--primary" type="submit">Wyślij wiadomość</button><p class="form__msg" role="status" aria-live="polite"></p></div></form></div></div><div class="z z--b contact__row2"><div class="z__media"><div class="map" data-map="https://www.google.com/maps?q=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec&amp;output=embed"><p>Mapa Google wczyta się po kliknięciu.</p><button type="button" class="btn btn--primary" data-map-load>Pokaż mapę</button><a href="https://www.google.com/maps/search/?api=1&amp;query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec" target="_blank" rel="noopener" data-maps>Dojazd w Mapach Google</a></div></div><div class="z__text"><h3>Godziny biura klubu</h3><span class="status status--open" data-status><span class="status__dot" aria-hidden="true"></span><span class="status__t">Otwarte teraz · do 20:00</span></span><table class="hours"><caption class="sr">Godziny biura klubu</caption><tbody><tr><th scope="row">Poniedziałek</th><td>16:00–20:00</td></tr><tr class="is-today" aria-current="date"><th scope="row">Wtorek</th><td>16:00–20:00</td></tr><tr><th scope="row">Środa</th><td>16:00–20:00</td></tr><tr><th scope="row">Czwartek</th><td>16:00–20:00</td></tr><tr><th scope="row">Piątek</th><td>16:00–20:00</td></tr><tr><th scope="row">Sobota</th><td>nieczynne</td></tr><tr><th scope="row">Niedziela</th><td>nieczynne</td></tr></tbody></table><div class="changes"><h4>Zmiany w godzinach</h4><ul><li><strong>1 listopada</strong> — nieczynne (Wszystkich Świętych)</li><li><strong>11 listopada</strong> — nieczynne (Narodowe Święto Niepodległości)</li></ul></div><p class="note">Godziny przykładowe — <mark class="todo">[DO UZUPEŁNIENIA]</mark></p></div></div></div></section>
 </main>
 <footer id="stopka" class="footer"><div class="wrap footer__grid"><div><img src="img/ks-turow-zgorzelec-logo-160.webp" width="96" height="97" alt="Logo KS Turów" loading="lazy"><p class="footer__tag">Koszykówka z pasją — w Zgorzelcu.</p><p>Działamy w Zgorzelcu i zapraszamy zawodników z całej Polski.</p></div><div><p class="footer__h">KS Turów</p><address>ul. Lubańska 9A, 59-900 Zgorzelec<br><a href="tel:+48534788402" data-call>+48 534 788 402</a><br><mark class="todo">[DO UZUPEŁNIENIA: e-mail]</mark></address><p><a href="https://www.google.com/maps/search/?api=1&amp;query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec" target="_blank" rel="noopener" data-maps>Dojazd w Mapach Google</a><br>Profil Firmy w Google: <mark class="todo">[LINK DO UZUPEŁNIENIA]</mark></p><ul class="soc"><li><span class="soc-todo" title="Facebook [LINK DO UZUPEŁNIENIA]"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v9h4v-9h3l.5-4h-3.5V8.8c0-.5.3-.8.5-.8z"/></svg></span></li><li><span class="soc-todo" title="Instagram [LINK DO UZUPEŁNIENIA]"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.3A4.7 4.7 0 1 0 12 16.7 4.7 4.7 0 0 0 12 7.3zm0 7.7a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm6-7.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0zM12 3.6c2.7 0 3 0 4.1.1 2.7.1 4 1.4 4.1 4.1.1 1.1.1 1.4.1 4.2s0 3-.1 4.1c-.1 2.7-1.4 4-4.1 4.1-1.1.1-1.4.1-4.1.1s-3 0-4.1-.1c-2.8-.1-4-1.4-4.1-4.1C3.7 15 3.7 14.7 3.7 12s0-3 .1-4.1C3.9 5.1 5.2 3.8 7.9 3.7 9 3.6 9.3 3.6 12 3.6zM12 2c-2.7 0-3.1 0-4.2.1C4.2 2.2 2.2 4.2 2.1 7.8 2 8.9 2 9.3 2 12s0 3.1.1 4.2c.2 3.6 2.1 5.6 5.7 5.7 1.1.1 1.5.1 4.2.1s3.1 0 4.2-.1c3.6-.2 5.6-2.1 5.7-5.7.1-1.1.1-1.5.1-4.2s0-3.1-.1-4.2c-.2-3.6-2.1-5.6-5.7-5.7C15.1 2 14.7 2 12 2z"/></svg></span></li><li><span class="soc-todo" title="Profil Firmy w Google [LINK DO UZUPEŁNIENIA]"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span></li></ul></div><nav aria-label="Na skróty"><p class="footer__h">Na skróty</p><ul class="footer__links"><li><a href="#aktualnosci">Aktualności</a></li><li><a href="#o-klubie">O klubie</a></li><li><a href="#historia">Historia</a></li><li><a href="#osiagniecia">Osiągnięcia</a></li><li><a href="#zespol">Seniorzy</a></li><li><a href="#mlodziez">Młodzież</a></li><li><a href="#grupy">Treningi</a></li><li><a href="#galeria">Galeria</a></li><li><a href="#certyfikaty">certyfikaty</a></li><li><a href="#sponsorzy">Sponsorzy</a></li><li><a href="#informacje">Informacje</a></li><li><a href="#kontakt">Kontakt</a></li></ul></nav><div><p class="footer__h">Godziny biura klubu</p><span class="status status--open" data-status><span class="status__dot" aria-hidden="true"></span><span class="status__t">Otwarte teraz · do 20:00</span></span></div></div><div class="wrap footer__bottom"><p>© 2026 KS Turów, Zgorzelec. Wszelkie prawa zastrzeżone.</p><p><a href="#panel" data-cms-open>Panel administratora</a> · Strona: <a href="https://strony-ai-wroclaw.pages.dev" rel="noopener" target="_blank">Strony AI Wrocław</a></p></div></footer>
 <nav class="mbar" aria-label="Na skróty">
@@ -977,6 +998,24 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   delete S.squads;
   S.settings.langs = { en: true, de: true };
 
+  /* ---------- Nazwa w nagłówku obok logo ---------- */
+  S.brand = { name: 'KS Turów', sub: T('Zgorzelec', 'Zgorzelec', 'Zgorzelec') };
+
+  /* ---------- INFORMACJE PRAKTYCZNE jako lista (nagłówek, treść, link) ---------- */
+  (function () {
+    var P = S.practical, n = 0;
+    function it(title, text, linkLabel, linkUrl) { return { id: 'pi' + (++n), hidden: false, title: title, text: text, linkLabel: linkLabel || T('', '', ''), linkUrl: linkUrl || '' }; }
+    P.items = [
+      it(T('Hala i treningi', 'Venue & training', 'Halle & Training'), P.venue),
+      it(T('Parking', 'Parking', 'Parken'), P.parking),
+      it(T('Płatności i składki', 'Payments & fees', 'Zahlungen & Beiträge'), P.payments),
+      it(T('Dostępność', 'Accessibility', 'Barrierefreiheit'), P.access),
+      it(T('Regulamin', 'Regulations', 'Vereinsordnung'), T('Regulamin klubu jest dostępny do pobrania poniżej. Plik regulaminu: [DO UZUPEŁNIENIA]', 'The club regulations are available for download below. Regulations file: [DO UZUPEŁNIENIA]', 'Die Vereinsordnung steht unten zum Download bereit. Datei: [DO UZUPEŁNIENIA]'), T('Pobierz regulamin klubu', 'Download club regulations', 'Vereinsordnung herunterladen'), '')
+    ];
+    P.linkLabel = T('', '', ''); P.linkUrl = '';
+    ['venue', 'parking', 'payments', 'access', 'rules', 'rulesUrl'].forEach(function (k) { delete P[k]; });
+  })();
+
   /* ---------- MENU STRONY (kolejność i widoczność pozycji w górnym menu) ---------- */
   var IN_MENU = ['aktualnosci', 'nabory', 'historia', 'osiagniecia', 'zespol', 'mlodziez', 'grupy', 'galeria', 'sponsorzy', 'kontakt'];
   S.menu = ['aktualnosci', 'nabory', 'o-klubie', 'historia', 'osiagniecia', 'zespol', 'mlodziez', 'grupy', 'galeria', 'certyfikaty', 'sponsorzy', 'partnerzy', 'informacje', 'kontakt']
@@ -1228,6 +1267,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     if (id === 'sponsorzy') return visible(S.sponsors).length > 0;
     if (id === 'partnerzy') return visible(S.partners).length > 0;
     if (id === 'grupy') return visible(S.groups).length > 0;
+    if (id === 'informacje') return visible((S.practical || {}).items).length > 0 || !!(S.practical || {}).linkUrl;
     return true;
   }
   var NAV = ['aktualnosci', 'nabory', 'historia', 'osiagniecia', 'zespol', 'mlodziez', 'grupy', 'galeria', 'sponsorzy', 'kontakt'];
@@ -1301,18 +1341,24 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   };
 
   function groupById(S, id) { var r = null; (S.groups || []).forEach(function (g) { if (g.id === id) r = g; }); return r; }
+  // powiązana grupa: id grupy, jej nazwa albo dowolny własny tekst
+  function groupFor(S, v) {
+    if (!v) return null; var key = String(v).trim().toLowerCase(), r = groupById(S, v);
+    (S.groups || []).forEach(function (g) { if (!r && plain(tr(g.name, 'pl')).trim().toLowerCase() === key) r = g; });
+    return r;
+  }
 
   R.nabory = function (S, ctx) {
     var L = I[ctx.lang], on = sectionOn(S, 'nabory', ctx), list = activeOf(S.promos, ctx.now);
     var inner = secHead(S, 'nabory', ctx) + '<div class="promos">' + list.map(function (p, i) {
-      var g = p.groupId ? groupById(S, p.groupId) : null;
+      var g = groupFor(S, p.groupId), gl = g ? plain(tr(g.name, ctx.lang)) : (p.groupId || '');
       var endTxt = p.end ? L.validTo + ' ' + fmtDate(p.end, ctx.lang) : L.noEnd;
       return '<article class="promo' + (i % 2 ? ' promo--rev' : '') + '">' +
         '<div class="promo__img">' + img(p.img, plain(tr(p.title, ctx.lang)), ctx, { ph: 'zdjęcie do naboru / akcji' }) + (tr(p.badge, ctx.lang) ? '<span class="badge badge--promo promo__badge">' + esc(tr(p.badge, ctx.lang)) + '</span>' : '') + '</div>' +
         '<div class="promo__body"><h3>' + inline(tr(p.title, ctx.lang)) + '</h3>' + md(tr(p.desc, ctx.lang)) +
         '<p class="promo__valid">' + esc(endTxt) + (p.end ? ' · <span data-countdown data-end="' + esc(p.end) + '">' + esc(countdown(p.end, ctx.now, ctx.lang)) + '</span>' : '') + '</p>' +
         (p.end && p.start ? '<div class="progress" role="presentation"><span data-progress data-start="' + esc(p.start) + '" data-end="' + esc(p.end) + '" style="width:' + progress(p.start, p.end, ctx.now) + '%"></span></div>' : '') +
-        '<a class="btn btn--primary" href="#kontakt" data-subject="join"' + (g ? ' data-group="' + esc(plain(tr(g.name, ctx.lang))) + '"' : '') + '>' + esc(g ? L.ctaJoinShort + ': ' + plain(tr(g.name, ctx.lang)) : L.ctaJoin) + '</a></div></article>';
+        '<a class="btn btn--primary" href="#kontakt" data-subject="join"' + (gl ? ' data-group="' + esc(gl) + '"' : '') + '>' + esc(gl ? L.ctaJoinShort + ': ' + gl : L.ctaJoin) + '</a></div></article>';
     }).join('') + '</div>';
     return section('nabory', 'sec--green', inner, on);
   };
@@ -1344,7 +1390,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   R.grupy = function (S, ctx) {
     var L = I[ctx.lang], on = sectionOn(S, 'grupy', ctx), promos = activeOf(S.promos, ctx.now);
     var inner = secHead(S, 'grupy', ctx) + '<div class="groups">' + visible(S.groups).map(function (g, i) {
-      var badges = '', pr = promos.filter(function (p) { return p.groupId === g.id; })[0];
+      var badges = '', pr = promos.filter(function (p) { return groupFor(S, p.groupId) === g; })[0];
       if (pr) badges += '<span class="badge badge--promo">' + esc(tr(pr.badge, ctx.lang) || L.promoBadge) + '</span>';
       if (g.isNew) badges += '<span class="badge badge--new">' + esc(L.newBadge) + '</span>';
       if (tr(g.badge, ctx.lang)) badges += '<span class="badge badge--own">' + esc(tr(g.badge, ctx.lang)) + '</span>';
@@ -1527,15 +1573,21 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   R.sponsorzy = function (S, ctx) { return logoWall(S, ctx, 'sponsorzy', S.sponsors, 'sec--light'); };
   R.partnerzy = function (S, ctx) { return logoWall(S, ctx, 'partnerzy', S.partners, 'sec--warm'); };
 
+  function infoLink(label, url, ctx, cls) {
+    if (!url) return '';
+    var file = /\.(pdf|docx?|xlsx?|zip)$/i.test(url), ext = /^https?:/.test(url);
+    return '<a class="btn ' + (cls || 'btn--primary') + '" href="' + esc(src(url, ctx)) + '"' + (file ? ' download' : '') + (ext && !file ? ' target="_blank" rel="noopener"' : '') + '>' + esc(label || url) + '</a>';
+  }
   R.informacje = function (S, ctx) {
-    var L = I[ctx.lang], P = S.practical, on = sectionOn(S, 'informacje', ctx);
-    var rows = [['venue', L.venue, 'court'], ['parking', L.parking, 'car'], ['payments', L.payments, 'card'], ['access', L.access, 'access']];
-    var inner = secHead(S, 'informacje', ctx) + '<div class="info">' + rows.filter(function (r) { return tr(P[r[0]], ctx.lang); }).map(function (r) {
-      return '<div class="info__item"><h3>' + esc(r[1]) + '</h3>' + md(tr(P[r[0]], ctx.lang)) + '</div>';
-    }).join('') +
-      '<div class="info__item info__item--rules"><h3>' + esc(L.rules) + '</h3>' + md(tr(P.rules, ctx.lang)) +
-      (P.rulesUrl ? '<a class="btn btn--primary" href="' + esc(src(P.rulesUrl, ctx)) + '" download>' + esc(L.rulesDl) + '</a>' : '<p>' + hl(esc(L.rulesMissing)) + '</p>') + '</div></div>';
+    var P = S.practical, on = sectionOn(S, 'informacje', ctx);
+    var inner = secHead(S, 'informacje', ctx) + '<div class="info">' + visible(P.items).map(function (it) {
+      return '<div class="info__item"><h3>' + inline(tr(it.title, ctx.lang)) + '</h3>' + md(tr(it.text, ctx.lang)) + infoLink(tr(it.linkLabel, ctx.lang), it.linkUrl, ctx) + '</div>';
+    }).join('') + '</div>' + (P.linkUrl ? '<p class="info__more">' + infoLink(tr(P.linkLabel, ctx.lang), P.linkUrl, ctx, 'btn--ghost') + '</p>' : '');
     return section('informacje', 'sec--green', inner, on);
+  };
+  R.brand = function (S, ctx) {
+    var B = S.brand || {};
+    return '<img src="' + ctx.base + 'img/ks-turow-zgorzelec-logo-160.webp" width="52" height="52" alt="Logo ' + esc(B.name || 'KS Turów') + '"><span><b>' + esc(B.name || '') + '</b>' + (tr(B.sub, ctx.lang) ? '<small>' + esc(tr(B.sub, ctx.lang)) + '</small>' : '') + '</span>';
   };
 
   function mapsUrl(S) {
@@ -1574,9 +1626,9 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     var info = '<div class="z__text contact">' + secHead(S, 'kontakt', ctx) +
       '<dl class="contact__list"><div><dt>' + esc(L.phone) + '</dt><dd>' + phone + '</dd></div><div><dt>' + esc(L.email) + '</dt><dd>' + email + '</dd></div>' +
       '<div><dt>' + esc(L.address) + '</dt><dd><address>KS Turów<br>' + hl(esc(addrLine(S))) + (c.district ? '<br>' + esc(c.district) : '') + '</address><a href="' + esc(mapsUrl(S)) + '" target="_blank" rel="noopener" data-maps>' + esc(L.mapLink) + '</a></dd></div></dl>' +
-      (c.phone ? '<a class="btn btn--primary" href="' + telHref(c.phone) + '" data-call>' + esc(L.call) + '</a> ' : '') +
-      (c.email ? '<a class="btn btn--ghost" href="mailto:' + esc(c.email) + '" data-mail>' + esc(L.write) + '</a>' : '') +
-      (soc ? '<p class="contact__soc-h">' + esc(L.social) + '</p>' + soc : '') + '</div>';
+      '<div class="contact__act">' + (c.phone ? '<a class="btn btn--primary" href="' + telHref(c.phone) + '" data-call>' + esc(L.call) + '</a>' : '') +
+      (c.email ? '<a class="btn btn--ghost" href="mailto:' + esc(c.email) + '" data-mail>' + esc(L.write) + '</a>' : '') + '</div>' +
+      (soc ? '<div class="contact__soc"><p class="contact__soc-h">' + esc(L.social) + '</p>' + soc + '</div>' : '') + '</div>';
     var form = '<div class="z__media">' + contactForm(S, ctx) + '</div>';
     var mapBox = '<div class="map" data-map="' + esc(mapEmbed(S)) + '"><p>' + esc(L.mapNote) + '</p><button type="button" class="btn btn--primary" data-map-load>' + esc(L.showMap) + '</button><a href="' + esc(mapsUrl(S)) + '" target="_blank" rel="noopener" data-maps>' + esc(L.mapLink) + '</a></div>';
     var row2 = S.hours.show === false ? '<div class="contact__row2 contact__row2--map">' + mapBox + '</div>' :
@@ -1665,7 +1717,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     LANGS: LANGS, I: I, R: R, SECTIONS: SECTIONS, NAV: NAV, NAVLBL: NAVLBL,
     esc: esc, tr: tr, md: md, inline: inline, plain: plain, ymd: ymd, parse: parse, dow: dow, mins: mins, fmtDate: fmtDate, slug: slug,
     timedStatus: timedStatus, activeOf: activeOf, visible: visible, dayHours: dayHours, openStatus: openStatus, sectionOn: sectionOn,
-    countdown: countdown, progress: progress, pos: pos, X: X, hasBio: hasBio, initials: initials, menuLabel: menuLabel, KIND_LBL: KIND_LBL, teamsIn: teamsIn, safeId: safeId, jsonLd: jsonLd, isTodo: isTodo, mapsUrl: mapsUrl, telHref: telHref, src: src
+    countdown: countdown, progress: progress, pos: pos, groupFor: groupFor, X: X, hasBio: hasBio, initials: initials, menuLabel: menuLabel, KIND_LBL: KIND_LBL, teamsIn: teamsIn, safeId: safeId, jsonLd: jsonLd, isTodo: isTodo, mapsUrl: mapsUrl, telHref: telHref, src: src
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.KSTR = api;
 })(this);
@@ -1768,6 +1820,13 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       });
       delete saved.squads;
     }
+    var P = saved.practical;
+    if (P && !P.items && (P.venue || P.parking || P.payments || P.access || P.rules)) {
+      var d = clone(D.DEFAULTS.practical.items), keys = ['venue', 'parking', 'payments', 'access', 'rules'];
+      keys.forEach(function (k, i) { if (P[k] && d[i]) d[i].text = P[k]; });
+      if (P.rulesUrl && d[4]) d[4].linkUrl = P.rulesUrl;
+      P.items = d; keys.concat('rulesUrl').forEach(function (k) { delete P[k]; });
+    }
     return saved;
   }
   KST.migrate = migrate;
@@ -1784,6 +1843,8 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     R.SECTIONS.forEach(function (id) { replace(id, R.R[id](S, ctx)); });
     replace('stopka', R.R.stopka(S, ctx));
     var menu = doc.getElementById('menu-list'); if (menu) menu.innerHTML = R.R.menu(S, ctx);
+    var brand = doc.getElementById('brand'); if (brand) brand.innerHTML = R.R.brand(S, ctx);
+    setHeaderH();
     updateHead(S, ctx);
     updateBar(S);
     applyLangs(S);
@@ -2194,7 +2255,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     };
   }
   /* ---------- Definicje list (kolekcji) ---------- */
-  function groupOpts() { return [['', '— brak —']].concat(S().groups.map(function (g) { return [g.id, plTitle(g.name)]; })); }
+  function groupOpts() { return S().groups.map(function (g) { return plTitle(g.name); }).concat((S().teams || []).map(function (t) { return plTitle(t.label); })).filter(Boolean); }
   var STATUS = { active: ['Aktywna', 'ok'], planned: ['Zaplanowana', 'plan'], ended: ['Zakończona', 'off'], paused: ['Wstrzymana', 'off'] };
   var STATUS_N = { active: 'Aktywna', planned: 'Zaplanowana', ended: 'Zakończona', paused: 'Wstrzymana' };
 
@@ -2206,7 +2267,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
         { k: 'desc', l: 'Opis', t: 'area', i18n: 1, h: FMT },
         { k: 'badge', l: 'Plakietka (np. „Nabór 2027”, „Dzień otwarty”)', t: 'text', i18n: 1 },
         { k: 'img', l: 'Zdjęcie', t: 'img' },
-        { k: 'groupId', l: 'Powiązana grupa treningowa (na jej karcie pojawi się plakietka)', t: 'select', opts: groupOpts },
+        { k: 'groupId', l: 'Powiązana grupa — wybierz z listy albo wpisz własną (puste = brak)', t: 'combo', opts: groupOpts, h: 'Grupa z listy „Grupy treningowe” dostanie na swojej karcie plakietkę naboru. Własna nazwa pojawi się na przycisku „Zapisz się: …”.' },
         { k: 'start', l: 'Pokazuj od', t: 'date', half: 1 }, { k: 'end', l: 'Pokazuj do (puste = bez końca)', t: 'date', half: 1 },
         { k: 'ticker', l: 'Pokaż też na górnym pasku komunikatów', t: 'bool' },
         { k: 'paused', l: 'Wstrzymaj (nie pokazuj na stronie)', t: 'bool' }
@@ -2285,6 +2346,17 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     },
     sponsors: logoColl('sponsors', 'Sponsorzy', 'sponsora', 'sponsorzy', 'Sponsor tytularny, Sponsor główny, Sponsor'),
     partners: logoColl('partners', 'Partnerzy', 'partnera', 'partnerzy', 'Partner medialny, Partner instytucjonalny, Partner techniczny'),
+    practical: {
+      path: 'practical.items', name: 'Bloki informacji', one: 'blok', titleK: 'title', sec: 'informacje',
+      fields: [
+        { k: 'title', l: 'Nagłówek (np. Hala i treningi, Parking)', t: 'text', i18n: 1, req: 1 },
+        { k: 'text', l: 'Treść', t: 'area', i18n: 1, h: FMT },
+        { k: 'linkLabel', l: 'Tekst linku pod treścią (np. „Pobierz regulamin”)', t: 'text', i18n: 1 },
+        { k: 'linkUrl', l: 'Adres linku (strona www albo plik, np. dokumenty/regulamin-ks-turow.pdf) — puste = brak linku', t: 'text' }
+      ],
+      make: function () { return { id: uid(), hidden: false, title: T(''), text: T(''), linkLabel: T(''), linkUrl: '' }; },
+      sum: function (it) { var t = tr(it.text, 'pl'); return (t ? t.replace(/[*#]/g, '').slice(0, 60) + (t.length > 60 ? '…' : '') : 'brak treści') + (it.linkUrl ? ' · z linkiem' : ''); }
+    },
     certs: {
       path: 'certs', name: 'Certyfikaty i dyplomy', one: 'certyfikat / dyplom', titleK: 'title', imgK: 'img', sec: 'certyfikaty',
       fields: [
@@ -2432,7 +2504,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       { id: 'news', t: 'Aktualności', coll: 'news', sec: 'aktualnosci', d: 'Wpisy z życia klubu. Po dacie „Pokazuj do” znikają same i zostają tu jako archiwum.' }] },
     { g: 'Szkolenie', items: [{ id: 'groups', t: 'Grupy treningowe', coll: 'groups', sec: 'grupy', d: 'Grupy i drużyny: wiek, terminy treningów, składka, przycisk zapisu.' }] },
     { g: 'Wizerunek', items: [
-      { id: 'home', t: 'Strona główna', sec: 'start', d: 'Pierwszy ekran: tytuł, wprowadzenie, zdjęcia slidera, atuty oraz tytuł i opis dla Google.' },
+      { id: 'home', t: 'Strona główna', sec: 'start', d: 'Nazwa w nagłówku obok logo, pierwszy ekran: tytuł, wprowadzenie, zdjęcia slidera, atuty oraz tytuł i opis dla Google.' },
       { id: 'about', t: 'O klubie', sec: 'o-klubie', d: 'Tekst o klubie, dwa zdjęcia i wyróżniki.' },
       { id: 'gallery', t: 'Galeria i Instagram', coll: 'gallery', sec: 'galeria', d: 'Zdjęcia z podpisami i kategoriami (filtry na stronie) oraz widżet Instagrama.' }] },
     { g: 'Drużyny', items: teamNavItems() },
@@ -2445,7 +2517,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     { g: 'Klub', items: [
       { id: 'hours', t: 'Godziny biura', sec: 'kontakt', d: 'Godziny tygodniowe i dni specjalne (święta, zmiany). Status „Otwarte/Zamknięte” liczy się sam.' },
       { id: 'contact', t: 'Dane kontaktowe', sec: 'kontakt', d: 'Telefon, e-mail, adres i profile. Zmiany od razu aktualizują przyciski, stopkę i link do map.' },
-      { id: 'practical', t: 'Informacje praktyczne', sec: 'informacje', d: 'Hala, parking, płatności, dostępność i regulamin.' },
+      { id: 'practical', t: 'Informacje praktyczne', coll: 'practical', sec: 'informacje', d: 'Bloki z nagłówkiem, treścią i opcjonalnym linkiem (np. Hala i treningi, Parking, Regulamin). Dodawaj, usuwaj, zmieniaj kolejność. Na dole link pod całą sekcją.' },
       { id: 'form', t: 'Formularz kontaktowy', coll: 'formFields', sec: 'kontakt', d: 'Adres odbiorcy, sposób wysyłki, teksty, pola formularza i ochrona przed botami. Formularz zawsze mieści się na ekranie bez przewijania.' },
       { id: 'menu', t: 'Menu strony', coll: 'menu', d: 'Kolejność pozycji w górnym menu (strzałki ▲▼), ich widoczność i własne nazwy.' },
       { id: 'sections', t: 'Sekcje strony', d: 'Włączanie i ukrywanie sekcji oraz ich tytuły i wprowadzenia.' }] },
@@ -2585,11 +2657,13 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   }
   function drawSide() {
     if (!P.el) return;
-    P.el.querySelector('.cmsp-side').innerHTML = navGroups().map(function (g) {
+    var side = P.el.querySelector('.cmsp-side'), html = navGroups().map(function (g) {
       return '<div class="cmsp-side__g"><p class="cmsp-side__h">' + esc(g.g) + '</p><ul>' + g.items.map(function (it) {
         return '<li><button type="button" data-go="' + it.id + '"' + (P.page === it.id ? ' aria-current="page" class="is-on"' : '') + '><span>' + esc(it.t) + '</span>' + counts(it.id) + '</button></li>';
       }).join('') + '</ul></div>';
     }).join('');
+    // nie podmieniaj menu, gdy nic się nie zmieniło (inaczej kliknięcie w trakcie zapisu by „przepadło”)
+    if (side._html !== html) { side.innerHTML = html; side._html = html; }
   }
   function go(id) {
     if (!pageDef(id)) id = /^team:/.test(id) ? 'teams' : 'dash';
@@ -2639,6 +2713,8 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     });
   }
 
+  // stare powiązania nabór→grupa zapisane jako id (np. g1) pokazujemy jako nazwę grupy
+  function comboShow(f, v) { if (f.k === 'groupId') { var g = R.groupFor(S(), v); if (g) return plTitle(g.name); } return v; }
   /* ---------- Pola formularzy ---------- */
   var fid = 0;
   function normI18n(root, path) { var v = get(root, path); if (v == null || typeof v === 'string') set(root, path, T(v || '')); }
@@ -2664,7 +2740,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     }
     var input;
     if (f.t === 'area') input = '<textarea id="' + id + '" rows="5" data-fk="' + path + '">' + esc(v || '') + '</textarea>';
-    else if (f.t === 'combo') input = '<input id="' + id + '" list="' + id + 'dl" value="' + esc(v == null ? '' : v) + '" data-fk="' + path + '" autocomplete="off"><datalist id="' + id + 'dl">' + f.opts.map(function (o) { return '<option value="' + esc(o) + '">'; }).join('') + '</datalist>';
+    else if (f.t === 'combo') input = '<input id="' + id + '" list="' + id + 'dl" value="' + esc(v == null ? '' : comboShow(f, v)) + '" data-fk="' + path + '" autocomplete="off"><datalist id="' + id + 'dl">' + (typeof f.opts === 'function' ? f.opts() : f.opts).map(function (o) { return '<option value="' + esc(o) + '">'; }).join('') + '</datalist>';
     else if (f.t === 'select') input = '<select id="' + id + '" data-fk="' + path + '">' + f.opts().map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === (v || '') ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>';
     else input = '<input id="' + id + '" type="' + ({ date: 'date', time: 'time', number: 'number', email: 'email', tel: 'tel', url: 'url' }[f.t] || 'text') + '" value="' + esc(v == null ? '' : v) + '" data-fk="' + path + '"' + (f.ph ? ' placeholder="' + esc(f.ph) + '"' : '') + '>';
     return '<div class="' + cls + '"><label for="' + id + '">' + esc(f.l) + (f.req ? ' <span class="cmsp-req">*</span>' : '') + '</label>' + input + (f.h ? '<p class="cmsp-help">' + esc(f.h) + '</p>' : '') + '</div>';
@@ -3053,7 +3129,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     news: function () { return listHtml('news'); },
     groups: function () { return listHtml('groups'); },
     home: function () {
-      return form([
+      return form([{ k: 'name', l: 'Nazwa w nagłówku obok logo (pogrubiona)', t: 'text', half: 1 }, { k: 'sub', l: 'Podpis pod nazwą (np. Zgorzelec) — puste = brak', t: 'text', i18n: 1 }], 'brand', 'Nagłówek strony — nazwa obok logo') + form([
         { k: 'over', l: 'Nadtytuł', t: 'text', i18n: 1 },
         { k: 'title', l: 'Tytuł główny (nagłówek H1 — warto zostawić frazę „klub koszykarski” i miasto)', t: 'text', i18n: 1, h: '*słowo* = wyróżnienie kolorem' },
         { k: 'intro', l: 'Wprowadzenie', t: 'area', i18n: 1, h: FMT },
@@ -3093,10 +3169,9 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
         { k: 'gmb', l: 'Profil Firmy w Google (link do wizytówki w Mapach)', t: 'url' }], 'contact', 'Dane kontaktowe');
     },
     practical: function () {
-      return form([
-        { k: 'venue', l: 'Hala i treningi', t: 'area', i18n: 1, h: FMT }, { k: 'parking', l: 'Parking', t: 'area', i18n: 1 },
-        { k: 'payments', l: 'Płatności i składki', t: 'area', i18n: 1 }, { k: 'access', l: 'Dostępność (np. dla osób z niepełnosprawnością)', t: 'area', i18n: 1 },
-        { k: 'rules', l: 'Regulamin — tekst', t: 'area', i18n: 1 }, { k: 'rulesUrl', l: 'Plik regulaminu (adres lub ścieżka, np. dokumenty/regulamin-ks-turow.pdf)', t: 'text' }], 'practical', 'Informacje praktyczne');
+      return listHtml('practical') + form([
+        { k: 'linkLabel', l: 'Tekst linku pod całą sekcją (np. „Pełny regulamin obiektu”)', t: 'text', i18n: 1 },
+        { k: 'linkUrl', l: 'Adres linku pod sekcją (strona www albo plik, np. dokumenty/plik.pdf) — puste = brak linku', t: 'text' }], 'practical', 'Link pod sekcją');
     },
     sections: sectionsPage,
     password: passwordPage,
