@@ -21,8 +21,12 @@ Panel: login **admin**, hasło **kosz2026** (wersja demonstracyjna — zmiany za
 | Aktualności | #aktualnosci | KS Turów Zgorzelec |
 | Nabory i akcje | #nabory | nabór do drużyny koszykarskiej |
 | O klubie | #o-klubie | KS Turów Zgorzelec, koszykówka Zgorzelec |
+| Historia klubu (oś czasu, 6 rozdziałów) | #historia, #rozdzial-1…6 | historia Turów Zgorzelec |
+| Największe osiągnięcia | #osiagniecia | Turów Zgorzelec mistrz Polski 2014 |
+| Drużyna seniorów (2 Liga) | #zespol | PGE GiEK Turów Zgorzelec skład |
+| Drużyny młodzieżowe U13/U15/U17 | #mlodziez | koszykówka dla dzieci i młodzieży Zgorzelec |
 | Grupy treningowe | #grupy | treningi koszykówki dla dzieci Zgorzelec |
-| Zespół / Galeria / Instagram / Certyfikaty | #zespol #galeria #instagram #certyfikaty | (zaufanie) |
+| Galeria / Instagram / Certyfikaty | #galeria #instagram #certyfikaty | (zaufanie) |
 | Informacje praktyczne | #informacje | hala, składki, regulamin |
 | Kontakt | #kontakt | NAP, mapa, godziny biura |
 
@@ -32,9 +36,10 @@ Dane strukturalne: `SportsClub` (sport: Basketball) + `WebSite`. Bez ocen i opin
 **Spełnione:** lang + hreflang (pl/en/de/x-default) · unikalne title (≤60) i description (140–160) w 3 językach · jeden H1, hierarchia H2/H3 · canonical · Open Graph + Twitter Card + og-image · JSON-LD · treść w HTML bez JS · semantyczny HTML5 · mobile-first, brak poziomego przewijania przy 390 px, przyciski ≥44 px · lokalne fonty z preload i font-display: swap (2 kroje) · krytyczny CSS w head · mapa Google dopiero po kliknięciu · Instagram dopiero po kliknięciu · robots.txt, sitemap.xml, 404, favicony, manifest, theme-color · prefers-reduced-motion · brak śledzenia bez zgody (miejsce na GA4 i GSC zakomentowane w `<head>`).
 
 **Do uzupełnienia przez klub:**
-1. Telefon, e-mail klubu, ulica i kod pocztowy (Panel → Dane kontaktowe)
+1. E-mail klubu (Panel → Dane kontaktowe); adres i telefon biura uzupełnione z serwisu PZKosz — do potwierdzenia
 2. Linki: Facebook, Instagram, **Profil Firmy w Google** [LINK DO UZUPEŁNIENIA]
-3. Teksty klubu (o klubie, grupy: roczniki, terminy, składki) — obecne teksty to szkice
+3. Teksty grup treningowych (terminy, składki); historia kończy się na sezonie 2011/2012 — warto dopisać lata 2012–2026
+3a. Składy aktualizować w panelu (Drużyny → Seniorzy / U13 / U15 / U17); dla juniorów pokazywany jest tylko rocznik
 4. Profesjonalne zdjęcia: slider, o klubie (2), grupy, zespół, galeria, certyfikaty — najlepiej WebP, opisowe nazwy plików (np. `trening-koszykowki-dzieci-zgorzelec.webp`); zdjęcia wgrane przez panel zapisują się jako JPEG w przeglądarce
 5. Godziny biura (obecnie przykładowe) i zaznaczenie „potwierdzone”
 6. Regulamin PDF w `dokumenty/` + polityka prywatności (link przy formularzu)
