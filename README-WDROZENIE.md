@@ -110,3 +110,25 @@ Treść startowa nadal jest wbudowana w HTML (dla Google i na wypadek awarii ser
 - **Informacje praktyczne** — długie teksty są zwijane z przyciskiem „Czytaj więcej”.
 - **Historia** — rozdziały 2012–2015, 2015–2018 i 2018–2026; pasek rozdziałów jest przyklejony pod menu i sam przesuwa się przy przewijaniu.
 - **Hasło do panelu** zmienione w panelu przy włączonym zapisie na serwerze zapisuje się na serwerze (ma pierwszeństwo przed `ADMIN_PASSWORD` z Cloudflare).
+
+
+## Nowe funkcje (październik 2026)
+
+### Automatyczne tłumaczenie EN/DE (Workers AI)
+Dodatkowe powiązanie w Cloudflare: *Workers & Pages → ksturowprojekt → Settings → Bindings → Add → **Workers AI*** → Variable name: **`AI`** → Save → Retry deployment.
+W panelu: przy każdym polu wielojęzycznym przycisk „⇄ Przetłumacz z PL”; *Ustawienia → Wersje językowe*: „Przetłumacz brakujące / wszystko” i tryb „Tłumacz automatycznie”.
+Darmowy limit Workers AI wystarcza na tłumaczenie całej strony kilka razy dziennie. Tłumaczenia poprawione ręcznie nie są nadpisywane w trybie automatycznym.
+
+### Synchronizacja składów i terminarz
+- Drużyna → „Link do składu…” + przycisk **⟳ Zsynchronizuj dane** → okno z nowymi / brakującymi / zmienionymi zawodnikami i trenerami do zaznaczenia.
+- Drużyna → „Link do terminarza…” → sekcja **Terminarz i wyniki** pobiera mecze automatycznie (odświeżanie co 3 godziny, przycisk „⟳ Odśwież terminarz”). Można też dopisywać mecze ręcznie.
+- Dozwolone źródła: serwisy PZKosz i DZKosz. Jeśli serwis zmieni układ strony, odczyt może wymagać poprawki.
+
+### Facebook
+Sekcja z oficjalną wtyczką strony Facebooka (Wizerunek → Facebook). Domyślnie wpisy wczytują się po kliknięciu (RODO).
+
+### Formularz
+Telefon z numerem kierunkowym (+48 / +49 / +44 / +420), tylko cyfry, długość 9 (PL) lub 7–15. Restrykcyjna walidacja e-maila, imienia i treści na żywo i przy wysyłce; czerwone komunikaty; blokada wielokrotnego wysłania.
+
+### Odświeżanie strony
+Po odświeżeniu (F5) strona wraca do tej samej sekcji i miejsca.
