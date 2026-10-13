@@ -82,3 +82,23 @@ Ochrona przed botami: ukryte pole-pułapka, minimalny czas wypełniania, opcjona
 - **Nazwa w nagłówku** obok logo (pogrubiona nazwa + podpis) — Wizerunek → Strona główna.
 - **Informacje praktyczne** — bloki z nagłówkiem, treścią i linkiem (dodawanie, usuwanie, kolejność) + link pod całą sekcją.
 - **Nabory** — powiązana grupa z listy albo własna nazwa (pojawia się na przycisku „Zapisz się: …”).
+
+
+## ZAPIS PANELU NA SERWERZE — jednorazowa konfiguracja w Cloudflare (ok. 10 min)
+Bez tego panel działa w „trybie lokalnym” (zmiany widać tylko w przeglądarce, w której je zrobiono).
+Po konfiguracji zmiany z panelu widzą od razu wszyscy — na każdym komputerze i telefonie.
+
+1. **Utwórz bazę KV:** dash.cloudflare.com → *Storage & Databases* → *Workers KV* → **Create instance** → nazwa np. `ksturow-cms` → Create.
+2. **Podepnij ją do strony:** *Workers & Pages* → projekt `ksturowprojekt` → *Settings* → *Bindings* → **Add** → *KV namespace* →
+   - Variable name: **`CMS`** (dokładnie tak, wielkimi literami),
+   - KV namespace: `ksturow-cms` → Save.
+3. **Ustaw hasło do panelu:** *Settings* → *Variables and Secrets* → **Add** → Type: *Secret*, Name: **`ADMIN_PASSWORD`**, Value: Twoje hasło → Save.
+   (Opcjonalnie `ADMIN_LOGIN`, domyślnie `admin`.) Bez tego działa hasło startowe `kosz2026` — panel przypomni o zmianie.
+4. **Wdróż ponownie:** *Deployments* → przy ostatnim wdrożeniu „…” → **Retry deployment** (albo wgraj pliki na GitHub jeszcze raz).
+5. Otwórz stronę → kłódka → zaloguj się. Na pulpicie panelu powinno być: **„● Zapis na serwerze włączony”**.
+6. Masz wcześniejsze zmiany zrobione w panelu w tej przeglądarce? *Kopia zapasowa* → **Przywróć zmiany z archiwum** — zostaną wysłane na serwer.
+
+Jak to działa: folder `functions/` zawiera małe funkcje serwerowe (`/api/content`, `/api/login`, `/api/password`, `/api/img`).
+Każde wejście na stronę pobiera najnowsze treści z bazy (bez pamięci podręcznej). Zdjęcia z panelu zapisują się na serwerze jako osobne pliki.
+Darmowy plan Cloudflare: 100 000 odczytów i 1 000 zapisów dziennie — z dużym zapasem dla strony klubu.
+Treść startowa nadal jest wbudowana w HTML (dla Google i na wypadek awarii serwera).
