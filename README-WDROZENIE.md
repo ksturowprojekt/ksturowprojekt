@@ -102,3 +102,11 @@ Jak to działa: folder `functions/` zawiera małe funkcje serwerowe (`/api/conte
 Każde wejście na stronę pobiera najnowsze treści z bazy (bez pamięci podręcznej). Zdjęcia z panelu zapisują się na serwerze jako osobne pliki.
 Darmowy plan Cloudflare: 100 000 odczytów i 1 000 zapisów dziennie — z dużym zapasem dla strony klubu.
 Treść startowa nadal jest wbudowana w HTML (dla Google i na wypadek awarii serwera).
+
+## Nowe w panelu
+- **Ustawienia → Polityka prywatności** — treść edytowalna (PL/EN/DE), otwiera się w okienku z linku przy formularzu i w stopce (adres strony: `#polityka-prywatnosci`). Znaczniki {nazwa} {adres} {email} {telefon} wstawiają dane kontaktowe. Uzupełnij fragmenty [DO UZUPEŁNIENIA].
+- **Dane kontaktowe → Nazwa w adresie i w stopce.**
+- **Drużyny** — puste pola Rozgrywki/Sezon/Hala nie wyświetlają się; „Własne pola drużyny” pozwalają dodać dowolne (np. Trener główny, Dni treningów).
+- **Informacje praktyczne** — długie teksty są zwijane z przyciskiem „Czytaj więcej”.
+- **Historia** — rozdziały 2012–2015, 2015–2018 i 2018–2026; pasek rozdziałów jest przyklejony pod menu i sam przesuwa się przy przewijaniu.
+- **Hasło do panelu** zmienione w panelu przy włączonym zapisie na serwerze zapisuje się na serwerze (ma pierwszeństwo przed `ADMIN_PASSWORD` z Cloudflare).
