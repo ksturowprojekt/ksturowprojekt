@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-base="../" data-site="https://ksturow.eu/">
+<html lang="en" data-base="../" data-site="https://ksturow.eu/" data-build="mv6wdyms">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1800,11 +1800,41 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     }
   };
 
+  var BUILD = html.getAttribute('data-build') || '';
+  Store.archive = function (data) {
+    try { if (Store.db) { var tx = Store.db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(data, KEY + '-archiwum'); tx.objectStore('kv').delete(KEY); } } catch (e) { }
+    try { localStorage.removeItem(KEY); } catch (e) { }
+  };
+  Store.getArchive = function () {
+    return Store.open().then(function () {
+      return new Promise(function (res) {
+        try { var rq = Store.db.transaction('kv').objectStore('kv').get(KEY + '-archiwum'); rq.onsuccess = function () { res(rq.result || null); }; rq.onerror = function () { res(null); }; } catch (e) { res(null); }
+      });
+    });
+  };
+
+  /* ---------- Automatyczne pobieranie najnowszej wersji strony ----------
+     Przy wejściu i przy powrocie do karty sprawdzamy version.json (bez pamięci podręcznej).
+     Jeśli na serwerze jest nowsza wersja niż wczytana, strona sama się przeładowuje. */
+  function checkVersion() {
+    if (!BUILD || html.hasAttribute('data-preview') || !window.fetch) return;
+    fetch(BASE + 'version.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (v) {
+      if (!v || !v.build || v.build === BUILD) return;
+      var k = 'kst-reloaded-' + v.build;
+      try { if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); } catch (e) { }
+      location.reload();
+    }).catch(function () { });
+  }
+  doc.addEventListener('visibilitychange', function () { if (doc.visibilityState === 'visible') checkVersion(); });
+  addEventListener('pageshow', function (e) { if (e.persisted) checkVersion(); });
+  setTimeout(checkVersion, 1500);
+
   var KST = window.KST = {
     state: clone(D.DEFAULTS), lang: LANG, base: BASE, site: SITE, store: Store, merge: merge, clone: clone,
     ctx: function () { return { lang: LANG, base: BASE, now: new Date(), siteUrl: SITE }; },
     save: function () {
       KST.onSaving && KST.onSaving();
+      KST.state._build = BUILD;
       return Store.set(KST.state).then(function () { KST.onSaved && KST.onSaved(true); }, function () { KST.onSaved && KST.onSaved(false); });
     },
     rerender: rerender
@@ -2195,7 +2225,14 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     initDynamic();
     setInterval(tick, 60000);
     Store.get().then(function (saved) {
-      if (saved && saved._app === 'ksturow-cms') { KST.state = merge(D.DEFAULTS, migrate(saved)); }
+      if (saved && saved._app === 'ksturow-cms') {
+        if (saved._build === BUILD || html.hasAttribute('data-preview')) KST.state = merge(D.DEFAULTS, migrate(saved));
+        else {
+          // na serwer wgrano nową wersję strony: pokaż treści z serwera, a stare zmiany z panelu
+          // (zapisane tylko w tej przeglądarce) odłóż jako archiwum do ewentualnego przywrócenia
+          Store.archive(saved); KST.archived = true;
+        }
+      }
       rerender(); // zawsze odświeża treści zależne od daty (status, nabory, aktualności)
       KST.ready = true;
       doc.dispatchEvent(new Event('kst:ready'));
@@ -2597,6 +2634,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     P.el.hidden = false; doc.body.classList.add('no-scroll');
     go(P.page);
     P.el.querySelector('.cmsp-top__brand').focus();
+    if (K.archived && !P.archNote) { P.archNote = true; toast('Na serwerze jest nowa wersja strony — Twoje wcześniejsze zmiany z panelu są w archiwum (Kopia zapasowa).'); }
   }
   function closePanel(scrollTo) {
     if (!P.el) return;
@@ -2671,6 +2709,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     var d = pageDef(id), main = P.el.querySelector('.cmsp-main');
     var fn = PAGES[id] || (/^team:/.test(id) ? function () { return teamPage(id.slice(5)); } : function () { return ''; });
     main.innerHTML = '<div class="cmsp-ph"><div><h2 class="cmsp-h1">' + esc(d.t.replace(/^·\s*/, '')) + '</h2><p>' + esc(d.d) + '</p></div><div class="cmsp-ph__act"><button type="button" class="cmsp-btn cmsp-pvbtn" data-act="pvtoggle">Podgląd sekcji</button>' + (d.sec ? '<button type="button" class="cmsp-btn" data-act="see" data-sec="' + d.sec + '"' + (d.team ? ' data-team="' + esc(d.team) + '"' : '') + '>Zobacz na stronie ↗</button>' : '') + '</div></div>' + fn();
+    if (id === 'backup') K.store.getArchive().then(function (a) { var c = P.el.querySelector('[data-archive]'); if (a && c) c.hidden = false; });
     updatePreview();
     main.scrollTop = 0;
     var cur = P.el.querySelector('.cmsp-side .is-on'); if (cur && cur.scrollIntoView && innerWidth < 900) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
@@ -3050,13 +3089,19 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
 
   /* ---------- Kopia zapasowa ---------- */
   function backupPage() {
-    return '<section class="cmsp-card"><h2>Eksport</h2><p class="cmsp-muted">Kopia zawiera wszystkie treści, zdjęcia wgrane z dysku i hasło (zaszyfrowane skrótem).</p>' +
+    return '<section class="cmsp-card cmsp-info" data-archive hidden><h2>Zmiany sprzed aktualizacji strony</h2><p>Po wgraniu nowej wersji strony na serwer zmiany zrobione wcześniej w panelu (zapisane tylko w tej przeglądarce) zostały odłożone do archiwum, a strona pokazuje treści z serwera. Możesz je przywrócić — nadpiszą treści z serwera w tej przeglądarce.</p><button type="button" class="cmsp-btn cmsp-btn--pri" data-act="restoreArchive">Przywróć zmiany z archiwum</button></section>' + '<section class="cmsp-card"><h2>Eksport</h2><p class="cmsp-muted">Kopia zawiera wszystkie treści, zdjęcia wgrane z dysku i hasło (zaszyfrowane skrótem).</p>' +
       '<label class="sr" for="cmsp-exp">Dane JSON</label><textarea id="cmsp-exp" class="cmsp-code" rows="8" readonly>' + esc(JSON.stringify(S(), null, 2)) + '</textarea>' +
       '<div class="cmsp-actions"><button type="button" class="cmsp-btn" data-act="copy">Kopiuj do schowka</button><button type="button" class="cmsp-btn cmsp-btn--pri" data-act="download">Pobierz plik .json</button></div></section>' +
       '<section class="cmsp-card"><h2>Import</h2><label for="cmsp-imp">Wklej kopię (JSON) albo wybierz plik</label><textarea id="cmsp-imp" class="cmsp-code" rows="6"></textarea>' +
       '<div class="cmsp-actions"><label class="cmsp-btn cmsp-file">Wybierz plik .json<input type="file" accept=".json,application/json" id="cmsp-impf"></label><button type="button" class="cmsp-btn cmsp-btn--pri" data-act="import">Importuj</button></div><p class="cmsp-err" role="alert"></p></section>' +
       '<section class="cmsp-card cmsp-danger"><h2>Przywróć treści początkowe</h2><p>Usuwa wszystkie zmiany z panelu (hasło pozostaje). Tej operacji nie można cofnąć — najpierw pobierz kopię.</p><button type="button" class="cmsp-btn cmsp-btn--del" data-act="reset">Przywróć treści początkowe</button></section>';
   }
+  ACTS.restoreArchive = function () {
+    K.store.getArchive().then(function (a) {
+      if (!a) { toast('Brak archiwum.'); return; }
+      K.state = K.merge(D.DEFAULTS, K.migrate(a)); commit('Przywrócono zmiany z archiwum.'); go('backup');
+    });
+  };
   ACTS.copy = function () {
     var ta = P.el.querySelector('#cmsp-exp');
     (navigator.clipboard ? navigator.clipboard.writeText(ta.value) : Promise.reject()).then(function () { toast('Skopiowano do schowka.'); }, function () { ta.select(); try { doc.execCommand('copy'); toast('Skopiowano do schowka.'); } catch (e) { toast('Zaznacz tekst i skopiuj ręcznie (Ctrl+C).'); } });
