@@ -69,21 +69,44 @@ function parseRoster(html) {
       coaches.push({ name: personName(cells[0]), role: cells[cells.length - 1] });
     }
   }
-  const lines = htmlToLines(html);
+  // etykieta w osobnej linii („Urodzony:” / „13.01.2015”) → jedna linia
+  const lines = [];
+  htmlToLines(html).forEach(l => { const prev = lines[lines.length - 1]; if (prev && /^(Urodzon[ya]|Wzrost|Pozycja|Numer|Nr)\s*:?$/i.test(prev)) lines[lines.length - 1] = prev + ' ' + l; else lines.push(l); });
+  const posOf = v => { const pm = POS_RE.exec(v); return pm ? pm[0].toLocaleLowerCase('pl').replace(/\s*\/\s*/, ' / ') : v.trim(); };
+  // cała karta zawodnika w jednej linii, np. DZKosz: „13 Mikołaj Bębas Urodzony: 13.01.2015 Wzrost: 148 cm Pozycja: rozgrywający / rzucający”
+  const ONE = /^(?:(\d{1,2})\s+)?([\p{L}][\p{L}'\-]+(?:\s+[\p{L}][\p{L}'\-]+){1,3})\s+Urodzon[ya]:?\s*(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+Wzrost:?\s*(\d{2,3})?\s*(?:cm)?)?(?:\s+Pozycja:?\s*(.*))?$/iu;
   lines.forEach((l, i) => {
+    const o = ONE.exec(l);
+    if (o) {
+      let pos = o[7] || ''; if (!pos && lines[i + 1] && /^Pozycja/i.test(lines[i + 1])) pos = lines[i + 1].replace(/^Pozycja:?\s*/i, '');
+      let num = o[1] || ''; if (!num && /^\d{1,2}$/.test(lines[i - 1] || '')) num = lines[i - 1];
+      add({ num, name: personName(o[2]), year: +o[5], height: o[6] || '', pos: pos ? posOf(pos) : '' });
+      return;
+    }
     const m = /^Urodzon[ya]:?\s*(\d{1,2})\.(\d{1,2})\.(\d{4})/i.exec(l); if (!m) return;
     const parts = []; for (let j = i - 1; j >= 0 && parts.length < 3; j--) { const x = lines[j]; if (/:|^\d|wzrost|pozycja|urodzon/i.test(x) || !/^[\p{L}'\- ]+$/u.test(x) || !/^\p{Lu}/u.test(x)) break; parts.unshift(x); }
     if (!parts.length) return;
+    const nb = lines[i - parts.length - 1] || '', num = /^\d{1,2}$/.test(nb) ? nb : '';
     let height = '', pos = '';
     for (let k = i + 1; k < Math.min(lines.length, i + 6); k++) {
       const w = /^Wzrost:?\s*(\d{2,3})\s*cm/i.exec(lines[k]); if (w) height = w[1];
       const p = /^Pozycja:?\s*(.+)$/i.exec(lines[k]); if (p) { let v = p[1]; if (lines[k + 1] && !/:/.test(lines[k + 1]) && /^\p{Ll}/u.test(lines[k + 1])) v += ' ' + lines[k + 1]; const pm = POS_RE.exec(v); pos = pm ? pm[0].toLocaleLowerCase('pl').replace(/\s*\/\s*/, ' / ') : v.trim(); }
       if (/^Urodzon/i.test(lines[k])) break;
     }
-    add({ num: '', name: personName(parts.join(' ')), year: +m[3], height, pos });
+    add({ num, name: personName(parts.join(' ')), year: +m[3], height, pos });
   });
-  const tm = /TRENER(?:ZY|)\s*:\s*([^\n]+)/i.exec(lines.join('\n'));
-  if (tm && !coaches.length) tm[1].split(/\s*,\s*/).map(x => x.trim()).filter(x => NAME_OK.test(x)).forEach(n => coaches.push({ name: personName(n), role: 'Trener' }));
+  // „TRENERZY:” i dalej nazwiska — w tej samej linii lub w kolejnych (po przecinkach albo każde osobno)
+  const ti = lines.findIndex(l => /^TRENER(?:ZY|)\b\s*:?/i.test(l));
+  if (ti >= 0 && !coaches.length) {
+    const got = [lines[ti].replace(/^TRENER(?:ZY|)\s*:?\s*/i, '')];
+    for (let k = ti + 1; k < Math.min(lines.length, ti + 12); k++) {
+      const x = lines[k], nx = lines[k + 1] || '';
+      if (/[:\d]|urodzon|wzrost|pozycja/i.test(x) || /^Urodzon/i.test(nx)) break;
+      if (!/^[\p{L}'\-\s,.]+$/u.test(x)) break;
+      got.push(x);
+    }
+    got.join(',').split(/\s*,\s*/).map(x => x.replace(/\s+/g, ' ').trim()).filter(x => NAME_OK.test(x)).forEach(n => { if (!coaches.some(c => c.name === personName(n))) coaches.push({ name: personName(n), role: 'Trener' }); });
+  }
   return { players, coaches };
 }
 
