@@ -97,14 +97,18 @@ function parseSchedule(html, filter) {
   const out = [], key = (filter || 'Turów').toLocaleLowerCase('pl');
   function push(m) { if (!m.date || !m.home || !m.away) return; if (key && !(m.home + ' ' + m.away).toLocaleLowerCase('pl').includes(key)) return; if (!out.some(x => x.date === m.date && x.home === m.home && x.away === m.away)) out.push(m); }
   const teamCell = c => /\p{L}{3,}/u.test(c) && !DATE_RE.test(c) && !/^\d{4}-\d{2}-\d{2}/.test(c) && !/^(kolejka|runda|mecz|hala|szczegóły|relacja|statystyki|protokół|wynik|data|godz\.?|godzina|gospodarz|gość|dom|wyjazd|kol\.?)$/i.test(c) && c.length <= 60;
-  for (const cells of rows(html)) {
+  // komórka „Drużyna A - Drużyna B” (np. DZKosz) → dwie osobne komórki
+  const splitTeams = c => { const p = String(c).split(/\s+[-–—]\s+/); return p.length === 2 && p.every(x => /\p{L}{3,}/u.test(x) && !/^\d/.test(x)) && !DATE_RE.test(c) ? p.map(x => x.trim()) : [c]; };
+  const SCORE = /^(\d{1,3})\s*[:\-–]\s*(\d{1,3})$/;
+  for (const raw of rows(html)) {
+    const cells = [].concat(...raw.map(splitTeams));
     const all = cells.join(' | '); const date = isoDate(all); if (!date) continue;
     const di = cells.findIndex(c => isoDate(c));
     const firstTeam = cells.findIndex((c, i) => i !== di && teamCell(c) && !/^\d/.test(c));
     const TIME = /\b([01]?\d|2[0-3]):([0-5]\d)\b/;
     let tmm = TIME.exec(cells[di].replace(/\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4}/, ''));
     if (!tmm) { const tc = cells.find((c, i) => i !== di && i < (firstTeam < 0 ? cells.length : firstTeam) && new RegExp('^' + TIME.source + '$').test(c)); if (tc) tmm = TIME.exec(tc); }
-    const sc = cells.map((c, i) => i > firstTeam && firstTeam >= 0 ? /^(\d{1,3})\s*[:\-–]\s*(\d{1,3})$/.exec(c) : null).find(Boolean);
+    const sc = cells.map((c, i) => i > firstTeam && firstTeam >= 0 ? SCORE.exec(c) : null).find(Boolean);
     const teams = cells.filter((c, i) => i !== di && teamCell(c) && !/^\d/.test(c));
     if (teams.length < 2) continue;
     let sh = '', sa = '';
@@ -119,7 +123,8 @@ function parseSchedule(html, filter) {
       const date = isoDate(L[i]); if (!date) continue;
       const tm = /\b(\d{1,2}):(\d{2})\b/.exec(L[i]);
       const nxt = L.slice(i + 1, i + 7); const t = [], s = [];
-      for (const x of nxt) { if (isoDate(x)) break; const ms = /^(.+?)\s+(\d{1,3})$/.exec(x); if (ms && teamCell(ms[1])) { t.push(ms[1]); s.push(ms[2]); } else if (/^\d{1,3}$/.test(x)) s.push(x); else if (teamCell(x)) t.push(x); if (t.length >= 2 && s.length >= 2) break; }
+      for (const x0 of nxt) { if (isoDate(x0)) break; const sx = SCORE.exec(x0); if (sx) { s.push(sx[1], sx[2]); if (t.length >= 2) break; continue; }
+        const parts = splitTeams(x0); if (parts.length === 2) { t.push(parts[0], parts[1]); continue; } const x = x0; const ms = /^(.+?)\s+(\d{1,3})$/.exec(x); if (ms && teamCell(ms[1])) { t.push(ms[1]); s.push(ms[2]); } else if (/^\d{1,3}$/.test(x)) s.push(x); else if (teamCell(x)) t.push(x); if (t.length >= 2 && s.length >= 2) break; }
       if (t.length >= 2) push({ date, time: tm ? tm[1].padStart(2, '0') + ':' + tm[2] : '', home: t[0], away: t[1], sh: s[0] || '', sa: s[1] || '' });
     }
   }
