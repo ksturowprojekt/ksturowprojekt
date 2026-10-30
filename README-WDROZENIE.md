@@ -134,6 +134,9 @@ Panel → Wizerunek → Strona główna → „Sponsor strategiczny — logo kom
 ### Koordynator grup młodzieżowych
 Panel → Szkolenie → Koordynator młodzieży: karta na górze sekcji „Drużyny młodzieżowe” — zdjęcie, opis, telefon/e-mail i przycisk kontaktu, każdy element włączany osobno.
 
+### Harmonogram treningów
+Sekcja „Harmonogram treningów” (dawniej „Treningi”): tydzień w kolumnach (pon–pt, sobota/niedziela pojawiają się same, gdy są treningi), kolorowe kafelki z godzinami, grupą i salą, filtr „Pokaż treningi grupy” z podsumowaniem (liczba treningów i godzin w tygodniu), na telefonie przełącznik dni z dzisiejszym dniem na start. Pod spodem rozwijana grafika harmonogramu z linkiem do pełnego rozmiaru. Panel → Szkolenie → Harmonogram treningów: treningi (dzień, godziny, sala, grupa), grafiki, grupy z kolorami i sale.
+
 ### Facebook
 Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
 - **Wpisy w wyglądzie strony** (domyślnie): najpierw treść wpisu, zdjęcie pod spodem (albo nad — do wyboru), „Czytaj więcej” przy długich wpisach, liczba wpisów 1–20. Wpisy pobiera serwer strony co 15 minut, zdjęcia idą przez serwer strony (odwiedzający nie łączy się z Facebookiem — bez cookies, zgodnie z RODO). Wymaga **tokenu strony**.
