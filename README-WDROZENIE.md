@@ -125,6 +125,15 @@ Darmowy limit Workers AI wystarcza na tłumaczenie całej strony kilka razy dzie
 - Dozwolone źródła: serwisy PZKosz, DZKosz i DALK (dalk.pl — system FIBA/Genius Sports; dane wczytywane są spod adresu z parametrem WHurl). Jeśli serwis zmieni układ strony, odczyt może wymagać poprawki.
 - **⎘ Wklej dane ręcznie**: gdy automatyczny odczyt nie działa, otwórz stronę ze składem lub terminarzem, Ctrl+A, Ctrl+C i wklej w okienku — panel sam rozpozna zawodników albo mecze (skład przechodzi przez to samo okno porównania, mecze trafiają do „Mecze wpisane ręcznie”).
 
+### DALK (dalk.pl) i inne strony z systemem FIBA / Genius Sports
+Strony dalk.pl/fiba/…?WHurl=… nie zawierają danych w kodzie — wczytuje je skrypt systemu FIBA (Genius Sports). Serwer strony szuka adresu tego systemu automatycznie. Jeśli to się nie uda, komunikat w panelu podaje, co znaleziono — prześlij go twórcy strony. Gdy znany jest kod organizacji DALK w systemie Genius Sports, można go wpisać w Cloudflare jako zmienną środowiskową `FIBA_ORG` (Settings → Variables). Do tego czasu działa zawsze **⎘ Wklej dane ręcznie** (skład ze strony statystyk drużyny i terminarz z kartami meczów są rozpoznawane).
+
+### Sponsor strategiczny
+Panel → Wizerunek → Strona główna → „Sponsor strategiczny — logo kompozytowe”: pas pełnej szerokości pod pierwszym ekranem (nazwa, tekst, przycisk do strony sponsora), wyróżniony baner w sekcji „Sponsorzy” i logo w stopce — każde miejsce włączane osobno.
+
+### Koordynator grup młodzieżowych
+Panel → Szkolenie → Koordynator młodzieży: karta na górze sekcji „Drużyny młodzieżowe” — zdjęcie, opis, telefon/e-mail i przycisk kontaktu, każdy element włączany osobno.
+
 ### Facebook
 Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
 - **Wpisy w wyglądzie strony** (domyślnie): najpierw treść wpisu, zdjęcie pod spodem (albo nad — do wyboru), „Czytaj więcej” przy długich wpisach, liczba wpisów 1–20. Wpisy pobiera serwer strony co 15 minut, zdjęcia idą przez serwer strony (odwiedzający nie łączy się z Facebookiem — bez cookies, zgodnie z RODO). Wymaga **tokenu strony**.

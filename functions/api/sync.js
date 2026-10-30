@@ -35,13 +35,15 @@ function unwrapJs(t) {
   if (/<(table|tr|div|li)\b/i.test(t) && !/\\u003c|\\"/.test(t)) return t;
   return t.replace(/\\u([0-9a-f]{4})/gi, (m, h) => String.fromCharCode(parseInt(h, 16))).replace(/\\(["'\/])/g, '$1').replace(/\\[nrt]/g, ' ');
 }
+// kod organizacji w systemie FIBA/Genius Sports (np. dla DALK) — można też ustawić zmienną środowiskową FIBA_ORG
+let FIBA_ORG = '';
 async function resolvePage(url) {
-  let wh = null; try { wh = new URL(url).searchParams.get('WHurl'); } catch (e) { }
+  let wh = null, origin = ''; try { const u0 = new URL(url); wh = u0.searchParams.get('WHurl'); origin = u0.origin; } catch (e) { }
   const html = await fetchPage(url);
   if (!wh) return html;
   const path = (wh.startsWith('/') ? wh : '/' + wh);
   const cands = [];
-  const found = (html.match(/https?:\/\/[a-z0-9.-]*geniussports\.com\/[^"'\s<>\\)]*/gi) || []).map(u => u.replace(/&amp;/g, '&'));
+  const found = (html.replace(/\\\//g, '/').match(/(?:https?:)?\/\/[a-z0-9.-]*geniussports\.com\/[^"'\s<>\\)]*/gi) || []).map(u => (u.startsWith('//') ? 'https:' + u : u).replace(/&amp;/g, '&'));
   for (const u of found) {
     let x; try { x = new URL(u); } catch (e) { continue; }
     const seg = x.pathname.split('/').filter(Boolean);
@@ -52,10 +54,17 @@ async function resolvePage(url) {
   }
   const org = /(?:data-org|orgCode|org_code|"org"|'org')\s*[:=]\s*["']([A-Za-z0-9_]{2,20})["']/.exec(html);
   if (org) cands.push('https://hosted.dcd.shared.geniussports.com/' + org[1] + '/pl', 'https://hosted.dcd.shared.geniussports.com/embednf/' + org[1] + '/pl');
-  for (const base of [...new Set(cands)].slice(0, 6)) {
-    try { const t = await fetchPage(base + path); if (t && t.length > 300) return unwrapJs(t); } catch (e) { }
+  if (FIBA_ORG) cands.unshift('https://hosted.dcd.shared.geniussports.com/embednf/' + FIBA_ORG + '/pl', 'https://hosted.dcd.shared.geniussports.com/' + FIBA_ORG + '/pl');
+  const tried = [];
+  for (const base of [...new Set(cands)].slice(0, 8)) {
+    try {
+      const r = await fetch(base + path, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KSTurowSite/1.0)', 'Accept': 'text/html,*/*', 'Accept-Language': 'pl', 'Referer': origin + '/' } });
+      tried.push(base.replace('https://', '') + ' → ' + r.status);
+      if (r.ok) { const t = await r.text(); if (t && t.length > 300) return unwrapJs(t); }
+    } catch (e) { tried.push(base.replace('https://', '') + ' → błąd'); }
   }
-  throw new Error('strona wczytuje dane skryptem FIBA (Genius Sports), którego nie udało się odczytać automatycznie — użyj przycisku „Wklej dane ręcznie”.');
+  const info = found.length ? 'znalezione adresy: ' + [...new Set(found)].slice(0, 3).join(', ') + (tried.length ? '; próby: ' + tried.join(', ') : '') : 'na stronie nie znaleziono adresu systemu FIBA/Genius Sports';
+  throw new Error('strona wczytuje dane skryptem FIBA (Genius Sports), którego nie udało się odczytać automatycznie (' + info + '). Użyj „⎘ Wklej dane ręcznie” i prześlij ten komunikat twórcy strony.');
 }
 /* tekst skopiowany ze strony (Ctrl+A, Ctrl+C) → prosty HTML: wiersze z tabulatorami to wiersze tabeli */
 function textToHtml(text) {
@@ -99,7 +108,7 @@ function parseRoster(html) {
   let head = null;
   const HEAD = /^(no\.?|nr\.?|#|numer|name|player|players|zawodnik|zawodnicy|zawodniczka|imię i nazwisko|nazwisko i imię|nazwisko|imię)$/i;
   for (const cells of rows(html)) {
-    if (cells.some(c => HEAD.test(c)) && !cells.some(c => NAME_OK.test(c) && !HEAD.test(c) && !/^(imię i nazwisko|nazwisko i imię|data urodzenia|date of birth)$/i.test(c))) { head = cells.map(c => c.toLocaleLowerCase('pl')); continue; }
+    if (cells.some(c => HEAD.test(c)) && cells.every(c => !/^\d+([.,]\d+)?$/.test(c)) && !cells.some(c => DATE_RE.test(c))) { head = cells.map(c => c.toLocaleLowerCase('pl')); continue; }
     const di = cells.findIndex(c => DATE_RE.test(c) || isoDate(c));
     if (di < 0 && head && /trener|coach|asystent|kierownik|manager|staff/i.test(cells.join(' '))) {
       const nm = cells.find(c => NAME_OK.test(c) || /^[^,]+,\s*[^,]+$/.test(c)); const rl = cells.find(c => /trener|coach|asystent|kierownik|manager/i.test(c));
@@ -108,10 +117,13 @@ function parseRoster(html) {
     if (di < 0 && head) {
       const ni = cells.findIndex(c => (NAME_OK.test(c) || /^[\p{L}'\-]+,\s*[\p{L}'\- ]+$/u.test(c)) && !POS_RE.test(c) && !POS_CODE[c.toLowerCase()]);
       if (ni < 0) continue;
-      const num = cells.find((c, i) => i < ni && /^\d{1,2}$/.test(c)) || cells.find(c => /^\d{1,2}$/.test(c)) || '';
-      const h = cells.map(c => /^(\d{3})(\s*cm)?$/i.exec(c)).find(Boolean);
+      const hi = re => head.findIndex(h => re.test(h));
+      const nc = hi(/^(no\.?|nr\.?|#|numer|nr koszulki)$/i), hc = hi(/^(height|wzrost|ht)/i), pcI = hi(/^(pos|position|pozycja)/i);
+      const num = nc >= 0 ? (/^\d{1,2}$/.test(cells[nc] || '') ? cells[nc] : '') : (cells.find((c, i) => i < ni && /^\d{1,2}$/.test(c)) || '');
+      if (/^(team|totals|team totals|razem|suma|drużyna|zespół|total)\b/i.test(cells[ni])) continue;
+      const h = hc >= 0 ? /^(\d{3})/.exec(cells[hc] || '') : null;
       const yc = cells.map(c => /^(19[5-9]\d|20[0-2]\d)$/.exec(c)).find(Boolean);
-      const pc = cells.find(c => POS_CODE[c.toLowerCase()]); const pr = cells.map(c => POS_RE.exec(c)).find(Boolean);
+      const pc = pcI >= 0 && POS_CODE[(cells[pcI] || '').toLowerCase()] ? cells[pcI] : cells.find(c => POS_CODE[c.toLowerCase()] && c.length > 1); const pr = cells.map(c => POS_RE.exec(c)).find(Boolean);
       add({ num, name: personName(cells[ni]), year: yc ? +yc[1] : '', height: h ? h[1] : '', pos: pr ? pr[0].toLocaleLowerCase('pl').replace(/\s*\/\s*/, ' / ') : (pc ? POS_CODE[pc.toLowerCase()] : '') });
       continue;
     }
@@ -216,8 +228,9 @@ function parseSchedule(html, filter) {
       const date = isoDate(L[i]); if (!date) continue;
       const tNext = !hm(L[i]) && /^([01]?\d|2[0-3]):[0-5]\d(\s*[AaPp]\.?[Mm]\.?)?$/.test(L[i + 1] || '');
       const tm = hm(L[i]) || (tNext ? hm(L[i + 1]) : '');
-      const nxt = L.slice(i + (tNext ? 2 : 1), i + (tNext ? 8 : 7)); const t = [], s = [];
-      for (const x0 of nxt) { if (isoDate(x0)) break; const sx = SCORE.exec(x0); if (sx) { s.push(sx[1], sx[2]); if (t.length >= 2) break; continue; }
+      const nxt = L.slice(i + (tNext ? 2 : 1), i + (tNext ? 10 : 9)); const t = [], s = [];
+      let skip = false;
+      for (const x0 of nxt) { if (skip) { skip = false; continue; } if (/^(venue|hala|miejsce|arena|lokalizacja|obiekt|sala)\s*[:/]?\s*$/i.test(x0)) { skip = true; continue; } if (isoDate(x0)) break; const sx = SCORE.exec(x0); if (sx) { s.push(sx[1], sx[2]); if (t.length >= 2) break; continue; }
         const parts = splitTeams(x0); if (parts.length === 2) { t.push(parts[0], parts[1]); continue; } const x = x0; const ms = /^(.+?)\s+(\d{1,3})$/.exec(x); if (ms && teamCell(ms[1])) { t.push(ms[1]); s.push(ms[2]); } else if (/^\d{1,3}$/.test(x)) s.push(x); else if (teamCell(x)) t.push(x); if (t.length >= 2 && s.length >= 2) break; }
       if (t.length >= 2) push({ date, time: tm, home: t[0], away: t[1], sh: s[0] || '', sa: s[1] || '' });
     }
@@ -228,6 +241,7 @@ function parseSchedule(html, filter) {
 /* POST /api/sync  { url } — pobiera skład drużyny ze strony PZKosz / DZKosz (tylko dla zalogowanego administratora)
    Zwraca listę zawodników i trenerów; porównanie i decyzję co dodać/usunąć podejmuje panel. */
 export async function onRequestPost({ request, env }) {
+  FIBA_ORG = (env && env.FIBA_ORG) || '';
   if (!(await authFromRequest(request, env))) return json({ ok: false, error: 'auth' }, 401);
   let b = {}; try { b = await request.json(); } catch (e) { }
   // skład wklejony ręcznie w panelu (tekst skopiowany ze strony drużyny)
