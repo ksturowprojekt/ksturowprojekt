@@ -37,6 +37,65 @@ function unwrapJs(t) {
 }
 // kod organizacji w systemie FIBA/Genius Sports (np. dla DALK) — można też ustawić zmienną środowiskową FIBA_ORG
 let FIBA_ORG = '';
+/* ---- FIBA / Genius Sports (DALK i inne ligi z „WHurl”) ----
+   Strona ligi (np. dalk.pl/fiba/terminarz.html?WHurl=/competition/49982/schedule) osadza dane z
+   hosted.dcd.shared.geniussports.com/embednf/{org}/en{WHurl} — odpowiedź to JSON { html, css, js }. */
+const GENIUS = 'https://hosted.dcd.shared.geniussports.com';
+const ORG_BY_HOST = { 'dalk.pl': 'dalk' };
+function geniusUrl(url, kind) {
+  let u; try { u = new URL(url); } catch (e) { return ''; }
+  let org = '', path = '';
+  if (/geniussports\.com$/i.test(u.hostname)) {
+    const m = /^\/(?:embednf\/)?([a-z0-9_]+)\/[a-z]{2}(\/competition\/.+)$/i.exec(u.pathname); if (!m) return '';
+    org = m[1]; path = m[2];
+  } else {
+    const wh = u.searchParams.get('WHurl'); if (!wh) return '';
+    org = ORG_BY_HOST[u.hostname.replace(/^www\./, '')] || FIBA_ORG; path = wh.split('?')[0];
+  }
+  if (!org) return '';
+  path = path.replace(/\/+$/, '');
+  const team = /^(\/competition\/\d+\/team\/\d+)(\/[a-z]+)?$/.exec(path);
+  if (team && kind === 'roster') path = team[1] + '/roster';
+  if (team && kind === 'schedule' && !team[2]) path = team[1] + '/schedule';
+  return GENIUS + '/embednf/' + org.toLowerCase() + '/en' + path;
+}
+async function fetchGenius(u) {
+  const r = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KSTurowSite/1.0; +https://ksturow.eu)', 'Accept': 'application/json,text/html,*/*' }, cf: { cacheTtl: 300 } });
+  if (!r.ok) throw new Error('FIBA/Genius Sports: HTTP ' + r.status);
+  const t = await r.text();
+  try { const j = JSON.parse(t); if (j && typeof j.html === 'string') return j.html; } catch (e) { }
+  return t;
+}
+/* terminarz Genius: bloki „match-wrap” z datą („Sep 12, 2026, 1:30 PM”), gospodarzem, gościem i wynikiem */
+function parseGeniusSchedule(html, filter) {
+  const out = [], key = (filter || 'Turów').toLocaleLowerCase('pl');
+  const cls = (b, c, tag) => { const m = new RegExp('class\\s*=\\s*"[^"]*\\b' + c + '\\b[^"]*"[^>]*>([\\s\\S]*?)</' + (tag || 'span') + '>', 'i').exec(b); return m ? clean(m[1]) : ''; };
+  const blocks = String(html).split(/class\s*=\s*"match-wrap\b/i).slice(1);
+  for (const b of blocks) {
+    const done = !/^[^"]*STATUS_SCHEDULED/i.test(b) && !/class\s*=\s*"upcoming matchStatus"/i.test(b);
+    const when = cls(b, 'match-time', 'div'); const date = isoDate(when); if (!date) continue;
+    const ai = b.search(/class\s*=\s*"away-team\b/i); if (ai < 0) continue;
+    const homeB = b.slice(0, ai), awayB = b.slice(ai);
+    const home = cls(homeB, 'team-name-full') || cls(homeB, 'teamnames', 'a'), away = cls(awayB, 'team-name-full') || cls(awayB, 'teamnames', 'a'); if (!home || !away) continue;
+    let sh = '', sa = '';
+    if (done) { sh = (/\d+/.exec(cls(homeB, 'homescore', 'div') || cls(homeB, 'fake-cell', 'div')) || [''])[0]; sa = (/\d+/.exec(cls(awayB, 'awayscore', 'div') || cls(awayB, 'fake-cell', 'div')) || [''])[0]; if (!sh || !sa) sh = sa = ''; }
+    if (key && !(home + ' ' + away).toLocaleLowerCase('pl').includes(key)) continue;
+    if (!out.some(x => x.date === date && x.home === home && x.away === away)) out.push({ date, time: hm(when), home, away, sh, sa, place: cls(b, 'venuename', 'a') });
+  }
+  return out.sort((a, b) => (a.date + a.time < b.date + b.time ? -1 : 1));
+}
+async function geniusRoster(url) {
+  const base = geniusUrl(url, 'roster'); if (!base) return null;
+  const html = await fetchGenius(base);
+  let staff = ''; try { staff = await fetchGenius(base.replace(/\/roster$/, '/staff')); } catch (e) { }
+  return html + '\n' + staff;
+}
+async function geniusSchedule(url, filter) {
+  const u = geniusUrl(url, 'schedule'); if (!u) return null;
+  const html = await fetchGenius(u);
+  const m = parseGeniusSchedule(html, filter);
+  return m.length ? m : parseSchedule(html, filter);
+}
 async function resolvePage(url) {
   let wh = null, origin = ''; try { const u0 = new URL(url); wh = u0.searchParams.get('WHurl'); origin = u0.origin; } catch (e) { }
   const html = await fetchPage(url);
@@ -52,7 +111,8 @@ async function resolvePage(url) {
     const li = seg.findIndex(v => /^[a-z]{2}$/.test(v));
     if (li >= 1) cands.push(x.origin + '/' + seg.slice(0, li + 1).join('/'));
   }
-  const org = /(?:data-org|orgCode|org_code|"org"|'org')\s*[:=]\s*["']([A-Za-z0-9_]{2,20})["']/.exec(html);
+  const org = /hosted\.wh\.geniussports\.com\/embed\/?\?([A-Za-z0-9_]{2,20})/.exec(html) || /(?:data-org|orgCode|org_code|"org"|'org')\s*[:=]\s*["']([A-Za-z0-9_]{2,20})["']/.exec(html);
+  if (org) { const g = GENIUS + '/embednf/' + org[1].toLowerCase() + '/en' + path.split('?')[0]; try { return await fetchGenius(g); } catch (e) { } }
   if (org) cands.push('https://hosted.dcd.shared.geniussports.com/' + org[1] + '/pl', 'https://hosted.dcd.shared.geniussports.com/embednf/' + org[1] + '/pl');
   if (FIBA_ORG) cands.unshift('https://hosted.dcd.shared.geniussports.com/embednf/' + FIBA_ORG + '/pl', 'https://hosted.dcd.shared.geniussports.com/' + FIBA_ORG + '/pl');
   const tried = [];
@@ -106,7 +166,7 @@ function parseRoster(html) {
   const players = [], coaches = [], seen = {};
   function add(p) { const k = p.name.toLocaleLowerCase('pl'); if (!p.name || seen[k]) return; seen[k] = 1; players.push(p); }
   let head = null;
-  const HEAD = /^(no\.?|nr\.?|#|numer|name|player|players|zawodnik|zawodnicy|zawodniczka|imię i nazwisko|nazwisko i imię|nazwisko|imię)$/i;
+  const HEAD = /^(no\.?|nr\.?|#|numer|name|player|players|player name|shirt number|shirt no\.?|role|zawodnik|zawodnicy|zawodniczka|imię i nazwisko|nazwisko i imię|nazwisko|imię)$/i;
   for (const cells of rows(html)) {
     if (cells.some(c => HEAD.test(c)) && cells.every(c => !/^\d+([.,]\d+)?$/.test(c)) && !cells.some(c => DATE_RE.test(c))) { head = cells.map(c => c.toLocaleLowerCase('pl')); continue; }
     const di = cells.findIndex(c => DATE_RE.test(c) || isoDate(c));
@@ -118,7 +178,7 @@ function parseRoster(html) {
       const ni = cells.findIndex(c => (NAME_OK.test(c) || /^[\p{L}'\-]+,\s*[\p{L}'\- ]+$/u.test(c)) && !POS_RE.test(c) && !POS_CODE[c.toLowerCase()]);
       if (ni < 0) continue;
       const hi = re => head.findIndex(h => re.test(h));
-      const nc = hi(/^(no\.?|nr\.?|#|numer|nr koszulki)$/i), hc = hi(/^(height|wzrost|ht)/i), pcI = hi(/^(pos|position|pozycja)/i);
+      const nc = hi(/^(no\.?|nr\.?|#|numer|nr koszulki|shirt number|shirt no\.?)$/i), hc = hi(/^(height|wzrost|ht)/i), pcI = hi(/^(pos|position|pozycja)/i);
       const num = nc >= 0 ? (/^\d{1,2}$/.test(cells[nc] || '') ? cells[nc] : '') : (cells.find((c, i) => i < ni && /^\d{1,2}$/.test(c)) || '');
       if (/^(team|totals|team totals|razem|suma|drużyna|zespół|total)\b/i.test(cells[ni])) continue;
       const h = hc >= 0 ? /^(\d{3})/.exec(cells[hc] || '') : null;
@@ -245,14 +305,14 @@ async function teamFromState(env, id) {
   const st = await env.CMS.get('cms:state', 'json');
   return st && Array.isArray(st.teams) ? st.teams.find(t => t.id === id) : null;
 }
-const PARSER_V = 3; // zmiana numeru = stary zapis terminarza w KV jest pobierany od nowa
+const PARSER_V = 4; // zmiana numeru = stary zapis terminarza w KV jest pobierany od nowa
 async function refresh(env, team) {
   const url = String(team.scheduleUrl || '').trim();
   if (!url) return { ok: true, matches: [], at: null };
   if (!allowedUrl(url)) return { ok: false, error: 'url' };
   const key = 'sched:' + team.id;
   try {
-    const matches = parseSchedule(await resolvePage(url), team.scheduleFilter || 'Turów');
+    const matches = (await geniusSchedule(url, team.scheduleFilter || 'Turów')) || parseSchedule(await resolvePage(url), team.scheduleFilter || 'Turów');
     const rec = { url, v: PARSER_V, at: new Date().toISOString(), matches };
     await env.CMS.put(key, JSON.stringify(rec));
     return { ok: true, ...rec };
@@ -285,7 +345,7 @@ export async function onRequestPost({ request, env }) {
   }
   if (b.url) {
     if (!allowedUrl(b.url)) return json({ ok: false, error: 'url', message: 'Dozwolone są tylko adresy serwisów PZKosz, DZKosz i DALK.' }, 400);
-    try { return json({ ok: true, matches: parseSchedule(await resolvePage(b.url), b.filter || 'Turów') }); }
+    try { return json({ ok: true, matches: (await geniusSchedule(b.url, b.filter || 'Turów')) || parseSchedule(await resolvePage(b.url), b.filter || 'Turów') }); }
     catch (e) { return json({ ok: false, error: 'fetch', message: String(e && e.message || e) }, 502); }
   }
   if (!env.CMS) return noKv();

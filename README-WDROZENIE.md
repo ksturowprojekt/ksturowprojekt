@@ -126,7 +126,7 @@ Darmowy limit Workers AI wystarcza na tłumaczenie całej strony kilka razy dzie
 - **⎘ Wklej dane ręcznie**: gdy automatyczny odczyt nie działa, otwórz stronę ze składem lub terminarzem, Ctrl+A, Ctrl+C i wklej w okienku — panel sam rozpozna zawodników albo mecze (skład przechodzi przez to samo okno porównania, mecze trafiają do „Mecze wpisane ręcznie”).
 
 ### DALK (dalk.pl) i inne strony z systemem FIBA / Genius Sports
-Strony dalk.pl/fiba/…?WHurl=… nie zawierają danych w kodzie — wczytuje je skrypt systemu FIBA (Genius Sports). Serwer strony szuka adresu tego systemu automatycznie. Jeśli to się nie uda, komunikat w panelu podaje, co znaleziono — prześlij go twórcy strony. Gdy znany jest kod organizacji DALK w systemie Genius Sports, można go wpisać w Cloudflare jako zmienną środowiskową `FIBA_ORG` (Settings → Variables). Do tego czasu działa zawsze **⎘ Wklej dane ręcznie** (skład ze strony statystyk drużyny i terminarz z kartami meczów są rozpoznawane).
+Strony dalk.pl/fiba/…?WHurl=… osadzają dane z systemu FIBA (Genius Sports): serwer strony pobiera je bezpośrednio z hosted.dcd.shared.geniussports.com/embednf/dalk/en/… (skład: …/team/{id}/roster i …/staff, terminarz: …/competition/{id}/schedule). Wystarczy wkleić w panelu zwykłe linki z dalk.pl. Dla innych lig na tym systemie kod organizacji jest wykrywany ze strony albo można go ustawić zmienną środowiskową `FIBA_ORG`. Zapasowo działa **⎘ Wklej dane ręcznie**.
 
 ### Sponsor strategiczny
 Panel → Wizerunek → Strona główna → „Sponsor strategiczny — logo kompozytowe”: pas pełnej szerokości pod pierwszym ekranem (nazwa, tekst, przycisk do strony sponsora), wyróżniony baner w sekcji „Sponsorzy” i logo w stopce — każde miejsce włączane osobno.
