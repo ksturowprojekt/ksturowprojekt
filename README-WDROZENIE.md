@@ -122,7 +122,8 @@ Darmowy limit Workers AI wystarcza na tłumaczenie całej strony kilka razy dzie
 ### Synchronizacja składów i terminarz
 - Drużyna → „Link do składu…” + przycisk **⟳ Zsynchronizuj dane** → okno z nowymi / brakującymi / zmienionymi zawodnikami i trenerami do zaznaczenia.
 - Drużyna → „Link do terminarza…” → sekcja **Terminarz i wyniki** pobiera mecze automatycznie (odświeżanie co 3 godziny, przycisk „⟳ Odśwież terminarz”). Można też dopisywać mecze ręcznie.
-- Dozwolone źródła: serwisy PZKosz i DZKosz. Jeśli serwis zmieni układ strony, odczyt może wymagać poprawki.
+- Dozwolone źródła: serwisy PZKosz, DZKosz i DALK (dalk.pl — system FIBA/Genius Sports; dane wczytywane są spod adresu z parametrem WHurl). Jeśli serwis zmieni układ strony, odczyt może wymagać poprawki.
+- **⎘ Wklej dane ręcznie**: gdy automatyczny odczyt nie działa, otwórz stronę ze składem lub terminarzem, Ctrl+A, Ctrl+C i wklej w okienku — panel sam rozpozna zawodników albo mecze (skład przechodzi przez to samo okno porównania, mecze trafiają do „Mecze wpisane ręcznie”).
 
 ### Facebook
 Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
