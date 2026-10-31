@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-base="../" data-site="https://ksturow.eu/" data-build="mvwbc9so">
+<html lang="en" data-base="../" data-site="https://ksturow.eu/" data-build="mvwbusus">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -823,13 +823,13 @@ html.fx-in.fx-out body::after{animation:fxReveal .55s cubic-bezier(.7,0,.3,1) fo
 
 /* ---- Tło strony ze zdjęć (przenikanie, stałe przy przewijaniu) ---- */
 .bgshow{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--k);pointer-events:none}
-.bgshow__l{position:absolute;inset:-2%;background:center/cover no-repeat;opacity:0;transition:opacity 2s ease}
+.bgshow__l{position:absolute;inset:-2%;background:center/cover no-repeat;opacity:0;transition:opacity 2s ease-in-out;will-change:opacity,transform;backface-visibility:hidden}
 .bgshow__l.is-on{opacity:1}
-.bgshow--zoom .bgshow__l.is-on{animation:bgZoom 16s ease-out forwards}
+.bgshow--zoom .bgshow__l.is-anim{animation:bgZoom 16s linear forwards}
 .bgshow.is-paused .bgshow__l{animation-play-state:paused}
 @keyframes bgZoom{from{transform:scale(1)}to{transform:scale(1.12)}}
-.bgshow__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,83,42,.18),rgba(36,30,32,.28))}
-@media(prefers-reduced-motion:reduce){.bgshow__l{transition:none}.bgshow--zoom .bgshow__l.is-on{animation:none}}
+.bgshow__veil{position:absolute;inset:0;z-index:3;background:linear-gradient(180deg,rgba(20,83,42,.18),rgba(36,30,32,.28))}
+@media(prefers-reduced-motion:reduce){.bgshow__l{transition:none}.bgshow--zoom .bgshow__l.is-anim{animation:none}}
 /* sekcje półprzezroczyste — zdjęcia przebijają spod treści; siła ustawiana w panelu */
 html.has-bg{--bga:.84;--bgd:.84}
 html.has-bg[data-bglevel="subtle"]{--bga:.93;--bgd:.92}
@@ -3162,17 +3162,24 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     BG.list = order; BG.i = 0;
     var layers = el.querySelectorAll('.bgshow__l'), front = 0, ORIG = ['20% 30%', '80% 30%', '50% 80%', '30% 70%', '70% 60%', '50% 20%'];
     var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, wait = Math.max(4, +C.interval || 7) * 1000;
+    // Płynne przenikanie: nowa warstwa wchodzi nad starą (opacity), a stara NIE traci animacji przybliżenia,
+    // dopóki całkiem nie zniknie — inaczej jej obraz „przeskakiwał” do skali 1 w trakcie wygaszania.
+    var FADE = 2000, zoomMs = wait + FADE + 1500;
     function show(url) {
-      var L = layers[front]; front = 1 - front;
+      var L = layers[front], old = layers[1 - front]; front = 1 - front;
+      L.classList.remove('is-anim', 'is-on'); L.style.zIndex = 2; old.style.zIndex = 1;
       L.style.backgroundImage = 'url("' + url.replace(/"/g, '%22') + '")';
       L.style.transformOrigin = ORIG[Math.floor(Math.random() * ORIG.length)];
-      L.classList.remove('is-on'); void L.offsetWidth; L.classList.add('is-on');
-      layers[front].classList.remove('is-on');
+      L.style.animationDuration = zoomMs + 'ms';
+      void L.offsetWidth;
+      L.classList.add('is-anim', 'is-on');
+      clearTimeout(old._t); old._t = setTimeout(function () { old.classList.remove('is-on'); }, FADE + 100); // stara gaśnie dopiero, gdy nowa jest w pełni widoczna
     }
     function next() {
       if (!BG.el) return;
       var url = BG.list[BG.i % BG.list.length]; BG.i++;
-      var im = new Image(); im.onload = im.onerror = function () { if (BG.el !== el) return; show(url); if (BG.list.length > 1 && !reduce) BG.timer = setTimeout(next, wait); };
+      var im = new Image(), go = function () { if (BG.el !== el) return; requestAnimationFrame(function () { show(url); }); if (BG.list.length > 1 && !reduce) BG.timer = setTimeout(next, wait); };
+      im.onload = function () { (im.decode ? im.decode() : Promise.resolve()).then(go, go); }; im.onerror = go;
       im.src = url;
     }
     next();
