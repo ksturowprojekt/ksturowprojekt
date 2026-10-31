@@ -137,6 +137,11 @@ Panel → Szkolenie → Koordynator młodzieży: karta na górze sekcji „Druż
 ### Harmonogram treningów
 Sekcja „Harmonogram treningów” (dawniej „Treningi”): tydzień w kolumnach (pon–pt, sobota/niedziela pojawiają się same, gdy są treningi), kolorowe kafelki z godzinami, grupą i salą, filtr „Pokaż treningi grupy” z podsumowaniem (liczba treningów i godzin w tygodniu), na telefonie przełącznik dni z dzisiejszym dniem na start. Pod spodem rozwijana grafika harmonogramu z linkiem do pełnego rozmiaru. Panel → Szkolenie → Harmonogram treningów: treningi (dzień, godziny, sala, grupa), grafiki, grupy z kolorami i sale.
 
+### Efekty na stronie
+- Zmiana języka: animowana kurtyna w barwach klubu z logo; nowa wersja otwiera się w tej samej sekcji. Wyłączana w panelu (Wizerunek → Strona główna → Efekty na stronie); przy ustawieniu systemowym „ogranicz ruch” animacja się nie pokazuje.
+- Logo klubu przy kursorze (tylko mysz/gładzik), wyłączane w tym samym miejscu.
+- Mapa Google w sekcji Kontakt wczytuje się sama, gdy odwiedzający zbliża się do sekcji (Klub → Dane kontaktowe → przełącznik). Google może wtedy zapisywać pliki cookie — warto wspomnieć o tym w polityce prywatności.
+
 ### Facebook
 Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
 - **Wpisy w wyglądzie strony** (domyślnie): najpierw treść wpisu, zdjęcie pod spodem (albo nad — do wyboru), „Czytaj więcej” przy długich wpisach, liczba wpisów 1–20. Wpisy pobiera serwer strony co 15 minut, zdjęcia idą przez serwer strony (odwiedzający nie łączy się z Facebookiem — bez cookies, zgodnie z RODO). Wymaga **tokenu strony**.
