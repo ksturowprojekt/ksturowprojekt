@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mvw8hm1y">
+<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mvw9mq88">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -805,6 +805,15 @@ html.fx-in.fx-out body::after{animation:fxReveal .55s cubic-bezier(.7,0,.3,1) fo
 .curlogo.is-off{opacity:0}
 .curlogo.is-link{width:42px;height:42px}
 @media(hover:none),(pointer:coarse){.curlogo{display:none}}
+
+/* ---- małe miniatury zawodników (ustawienie drużyny) ---- */
+.roster--sm .pl--img{flex-direction:row;align-items:center}
+.roster--sm .pl__img{flex:none;width:64px}
+.roster--sm .pl__img img{width:64px;height:80px;aspect-ratio:auto;object-fit:cover;border-radius:8px}
+.roster--sm .pl--img .pl__num{top:8px;left:8px;width:26px;height:26px;font-size:.85rem;box-shadow:0 0 0 2px #fff}
+/* sztab szkoleniowy — jeszcze mniejsze miniatury */
+.coaches--sm li{padding:4px 14px 4px 4px;gap:8px}
+.coaches--sm .coaches__ini{width:30px;height:30px;font-size:.8rem}
 
 </style>
 <script type="application/ld+json" id="ld">{"@context":"https://schema.org","@graph":[{"@type":"SportsClub","@id":"https://ksturow.eu/#klub","name":"KS Turów","sport":"Basketball","url":"https://ksturow.eu/de/","logo":"https://ksturow.eu/img/ks-turow-zgorzelec-logo-512.png","image":"https://ksturow.eu/img/og-image.jpg","description":"KS Turów – Basketballverein in Zgorzelec, Polnischer Meister 2014. Herrenteam, Nachwuchs U13–U17, Vereinsgeschichte und Sichtungen. Jetzt Kontakt aufnehmen!","address":{"@type":"PostalAddress","addressLocality":"Zgorzelec","addressCountry":"PL","streetAddress":"ul. Lubańska 9A","postalCode":"59-900"},"areaServed":[{"@type":"City","name":"Zgorzelec"},{"@type":"Country","name":"Polska"}],"telephone":"+48 534 788 402","hasMap":"https://www.google.com/maps/search/?api=1&query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec","sameAs":["https://www.facebook.com/ksturowsa"]},{"@type":"WebSite","@id":"https://ksturow.eu/#www","url":"https://ksturow.eu/","name":"KS Turów","inLanguage":"de","publisher":{"@id":"https://ksturow.eu/#klub"}}]}</script>
@@ -1891,8 +1900,9 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   function coachesHtml(q, ctx, headTag) {
     var L = X[ctx.lang], cs = visible(q.coaches);
     if (!cs.length) return '';
-    return '<div class="coaches"><' + headTag + ' class="coaches__h">' + esc(L.staff) + '</' + headTag + '><ul>' + cs.map(function (c) {
+    return '<div class="coaches' + (q.photoSize === 'small' ? ' coaches--sm' : '') + '"><' + headTag + ' class="coaches__h">' + esc(L.staff) + '</' + headTag + '><ul>' + cs.map(function (c) {
       var bio = ctx.bios && hasBio(c) && q.id ? '<button type="button" class="pl__open" data-bio="' + esc(q.id + '|' + c.id) + '" aria-haspopup="dialog"><span class="sr">' + esc(L.more2 + ': ' + c.name) + '</span></button>' : '';
+      if (q.showPhotos === false) c = Object.assign({}, c, { img: '' });
       var face = c.img ? '<img class="coaches__ini" src="' + esc(src(c.img, ctx)) + '" alt="" width="40" height="40" loading="lazy">' : '<span class="coaches__ini" aria-hidden="true">' + esc(initials(c.name)) + '</span>';
       return '<li' + (bio ? ' class="is-bio"' : '') + '>' + face + '<span><b>' + esc(c.name) + '</b><small>' + esc(tr(c.role, ctx.lang)) + (bio ? ' · <u>' + esc(L.more2) + '</u>' : '') + '</small></span>' + bio + '</li>';
     }).join('') + '</ul></div>';
@@ -1921,7 +1931,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     var L = X[ctx.lang], ps = visible(t.players);
     return (withTitle ? '<' + hTag + ' class="tabpanel__h">' + esc(tr(t.label, ctx.lang)) + (t.name ? ' · ' + esc(t.name.replace(/\s+U\d+$/, '')) : '') + '</' + hTag + '>' : '') +
       squadMeta(t, ctx) + coachesHtml(t, ctx, subTag) +
-      (ps.length ? '<' + subTag + ' class="sq-h">' + esc(L.roster) + ' <small>' + ps.length + ' ' + esc(L.players) + '</small></' + subTag + '><ul class="roster">' + ps.map(function (p) { return playerCard(p, t, ctx); }).join('') + '</ul>' : '') +
+      (ps.length ? '<' + subTag + ' class="sq-h">' + esc(L.roster) + ' <small>' + ps.length + ' ' + esc(L.players) + '</small></' + subTag + '><ul class="roster' + (t.photoSize === 'small' ? ' roster--sm' : '') + '">' + ps.map(function (p) { return playerCard(p, t, ctx); }).join('') + '</ul>' : '') +
       sourceLink(t, ctx);
   }
   function hasBio(p) { var b = p.bio; return !!b && !!(typeof b === 'string' ? b : (b.pl || b.en || b.de)); }
@@ -3486,7 +3496,8 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       { k: 'name', l: 'Pełna nazwa drużyny', t: 'text', half: 1 },
       { k: 'section', l: 'W której sekcji strony', t: 'select', half: 1, opts: SEC_OPTS },
       { k: 'showNumbers', l: 'Pokazuj numery zawodników na koszulkach (odznaczone = zawodnicy bez żadnych cyfr)', t: 'bool' },
-      { k: 'showPhotos', l: 'Pokazuj zdjęcia zawodników na stronie (odznaczone = karty bez zdjęć; wgrane zdjęcia zostają w panelu)', t: 'bool' },
+      { k: 'showPhotos', l: 'Pokazuj zdjęcia zawodników i trenerów na stronie (odznaczone = karty bez zdjęć; wgrane zdjęcia zostają w panelu)', t: 'bool' },
+      { k: 'photoSize', l: 'Wielkość zdjęć zawodników', t: 'select', half: 1, opts: function () { return [['big', 'Duże — zdjęcie na całą kartę (jak dotąd)'], ['small', 'Małe miniatury obok nazwiska']]; } },
       { k: 'photosOk', l: 'Klub ma zgody na publikację wizerunku zawodników tej drużyny (przy niepełnoletnich — zgody rodziców) — pozwala pobierać zdjęcia przy synchronizacji', t: 'bool' },
       { k: 'league', l: 'Rozgrywki (puste = nie wyświetla się)', t: 'text', i18n: 1 }, { k: 'season', l: 'Sezon (puste = nie wyświetla się)', t: 'text', half: 1 },
       { k: 'venue', l: 'Hala (puste = nie wyświetla się)', t: 'text', i18n: 1 },
@@ -4306,7 +4317,8 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       (t.coaches || []).forEach(function (c) { if (!cc[normName(c.name)]) rows.cGone.push(c); });
     }
     // zdjęcia z serwisu: tylko gdy w danych drużyny zaznaczono zgody na publikację wizerunku
-    rows.ph = t.photosOk ? j.players.filter(function (p) { return p.photo; }).map(function (p) { var cur = site[normName(p.name)]; return { src: p, cur: cur || null, has: !!(cur && cur.img) }; }) : [];
+    rows.ph = t.photosOk ? j.players.filter(function (p) { return p.photo; }).map(function (p) { var cur = site[normName(p.name)]; return { src: p, cur: cur || null, has: !!(cur && cur.img) }; })
+      .concat((j.coaches || []).filter(function (c) { return c.photo; }).map(function (c) { var cur = cs[normName(c.name)]; return { src: c, cur: cur || null, has: !!(cur && cur.img), coach: true }; })) : [];
     var n = rows.add.length + rows.gone.length + rows.chg.length + rows.cAdd.length + rows.cGone.length + rows.ph.filter(function (x) { return !x.has; }).length;
     function grp(title, cls, list, render, checked, verb) {
       if (!list.length) return '';
@@ -4321,7 +4333,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       grp('Zmienione dane', 'chg', rows.chg, function (c) { return '<b>' + esc(c.cur.name) + '</b> <small>' + c.diffs.map(function (d) { return esc(d[1] + ': ' + d[2] + ' → ' + d[3]); }).join(' · ') + '</small>'; }, true, 'zaktualizuj') +
       grp('Nowi trenerzy', 'cAdd', rows.cAdd, function (c) { return '<b>' + esc(c.name) + '</b> <small>' + esc(c.role || '') + '</small>'; }, true, 'dodaj') +
       grp('Trenerzy nieobecni w serwisie', 'cGone', rows.cGone, function (c) { return '<b>' + esc(c.name) + '</b>'; }, false, 'usuń ze strony') +
-      grp('Zdjęcia zawodników z serwisu', 'ph', rows.ph, function (x) { return '<img class="cmsp-sph" src="' + esc(x.src.photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer"><b>' + esc(x.src.name) + '</b> <small>' + (x.has ? 'ma już zdjęcie na stronie — zaznacz, aby podmienić' : 'bez zdjęcia na stronie') + '</small>'; }, null, 'pobierz');
+      grp('Zdjęcia zawodników i trenerów z serwisu', 'ph', rows.ph, function (x) { return '<img class="cmsp-sph" src="' + esc(x.src.photo) + '" alt="" loading="lazy" referrerpolicy="no-referrer"><b>' + esc(x.src.name) + '</b> <small>' + (x.coach ? 'trener · ' : '') + (x.has ? 'ma już zdjęcie na stronie — zaznacz, aby podmienić' : 'bez zdjęcia na stronie') + '</small>'; }, null, 'pobierz');
     var phNote = !t.photosOk && j.players.length ? '<p class="cmsp-muted">Zdjęcia zawodników nie są pobierane. Aby je pobierać, zaznacz w danych drużyny „Klub ma zgody na publikację wizerunku zawodników tej drużyny”.</p>' : '';
     var back = doc.createElement('div'); back.className = 'cmsp-back';
     back.innerHTML = '<div class="cmsp-modal cmsp-syncdlg" role="dialog" aria-modal="true" aria-labelledby="cmsp-sync-t"><div class="cmsp-modal__h"><h2 id="cmsp-sync-t">Synchronizacja — ' + esc(plTitle(t.label)) + '</h2><button type="button" class="cmsp-x" data-x aria-label="Zamknij">×</button></div>' +
@@ -4339,11 +4351,13 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       var cnt = 0;
       var added = {};
       sel('add').forEach(function (k) { var p = rows.add[k], np = { id: uid(), hidden: false, num: youth ? '' : (p.num || ''), name: p.name, year: p.year || '', pos: p.pos || '', height: youth ? '' : (p.height || ''), img: '' }; t.players.push(np); added[normName(p.name)] = np; cnt++; });
-      var phJobs = sel('ph').map(function (k) { var x = rows.ph[k]; return { p: x.cur || added[normName(x.src.name)], url: x.src.photo }; }).filter(function (x) { return x.p; });
+      var phSel = sel('ph');
       sel('chg').forEach(function (k) { var c = rows.chg[k]; c.diffs.forEach(function (d) { c.cur[d[0]] = c.src[d[0]]; }); cnt++; });
       var goneIds = sel('gone').map(function (k) { return rows.gone[k].id; });
       if (goneIds.length) { t.players = t.players.filter(function (p) { return goneIds.indexOf(p.id) < 0; }); cnt += goneIds.length; }
-      sel('cAdd').forEach(function (k) { var c = rows.cAdd[k]; t.coaches.push({ id: uid(), hidden: false, name: c.name, role: T(c.role || 'Trener') }); cnt++; });
+      var addedC = {};
+      sel('cAdd').forEach(function (k) { var c = rows.cAdd[k], nc = { id: uid(), hidden: false, name: c.name, role: T(c.role || 'Trener') }; t.coaches.push(nc); addedC[normName(c.name)] = nc; cnt++; });
+      var phJobs = phSel.map(function (k) { var x = rows.ph[k]; return { p: x.cur || (x.coach ? addedC : added)[normName(x.src.name)], url: x.src.photo }; }).filter(function (x) { return x.p; });
       var cg = sel('cGone').map(function (k) { return rows.cGone[k].id; });
       if (cg.length) { t.coaches = t.coaches.filter(function (c) { return cg.indexOf(c.id) < 0; }); cnt += cg.length; }
       close(); commit('Wprowadzono ' + cnt + ' zmian ze synchronizacji.'); go(P.page);
@@ -4364,7 +4378,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       var cnt = {}; res.forEach(function (r) { cnt[r.url] = (cnt[r.url] || 0) + 1; });
       var ok = 0, skip = 0;
       res.forEach(function (r) { if (cnt[r.url] > 1) { skip++; return; } r.p.img = r.url; ok++; });
-      commit('Dodano ' + ok + ' zdjęć zawodników.'); if (P.page && /^team:/.test(P.page)) go(P.page);
+      commit('Dodano ' + ok + ' zdjęć.'); if (P.page && /^team:/.test(P.page)) go(P.page);
       st('✓ Zdjęcia: dodano ' + ok + (skip ? ', pominięto ' + skip + ' (zaślepki „brak zdjęcia”)' : '') + (jobs.length - res.length ? ', nie udało się ' + (jobs.length - res.length) : '') + '.');
     });
   }
