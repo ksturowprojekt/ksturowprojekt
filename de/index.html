@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mvwa17wq">
+<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mvwat5jk">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -821,6 +821,27 @@ html.fx-in.fx-out body::after{animation:fxReveal .55s cubic-bezier(.7,0,.3,1) fo
 .coaches--big b{font-size:1.08rem}
 @media(max-width:560px){.coaches--big .coaches__ini{width:64px;height:64px}}
 
+/* ---- Tło strony ze zdjęć (przenikanie, stałe przy przewijaniu) ---- */
+.bgshow{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--k);pointer-events:none}
+.bgshow__l{position:absolute;inset:-2%;background:center/cover no-repeat;opacity:0;transition:opacity 2s ease}
+.bgshow__l.is-on{opacity:1}
+.bgshow--zoom .bgshow__l.is-on{animation:bgZoom 16s ease-out forwards}
+.bgshow.is-paused .bgshow__l{animation-play-state:paused}
+@keyframes bgZoom{from{transform:scale(1)}to{transform:scale(1.12)}}
+.bgshow__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,83,42,.18),rgba(36,30,32,.28))}
+@media(prefers-reduced-motion:reduce){.bgshow__l{transition:none}.bgshow--zoom .bgshow__l.is-on{animation:none}}
+/* sekcje półprzezroczyste — zdjęcia przebijają spod treści; siła ustawiana w panelu */
+html.has-bg{--bga:.84;--bgd:.84}
+html.has-bg[data-bglevel="subtle"]{--bga:.93;--bgd:.92}
+html.has-bg[data-bglevel="strong"]{--bga:.68;--bgd:.7}
+html.has-bg body{background:transparent}
+html.has-bg .sec--light{background:rgba(255,255,255,var(--bga))}
+html.has-bg .sec--warm,html.has-bg .hero{background:rgba(247,245,240,var(--bga))}
+html.has-bg .sec--dark,html.has-bg .sec--ach{background:rgba(36,30,32,var(--bgd))}
+html.has-bg .sec--green{background:rgba(20,83,42,var(--bgd))}
+html.has-bg .hero__text{background:transparent}
+html.has-bg .spband{background:rgba(255,255,255,.96)}
+
 </style>
 <script type="application/ld+json" id="ld">{"@context":"https://schema.org","@graph":[{"@type":"SportsClub","@id":"https://ksturow.eu/#klub","name":"KS Turów","sport":"Basketball","url":"https://ksturow.eu/de/","logo":"https://ksturow.eu/img/ks-turow-zgorzelec-logo-512.png","image":"https://ksturow.eu/img/og-image.jpg","description":"KS Turów – Basketballverein in Zgorzelec, Polnischer Meister 2014. Herrenteam, Nachwuchs U13–U17, Vereinsgeschichte und Sichtungen. Jetzt Kontakt aufnehmen!","address":{"@type":"PostalAddress","addressLocality":"Zgorzelec","addressCountry":"PL","streetAddress":"ul. Lubańska 9A","postalCode":"59-900"},"areaServed":[{"@type":"City","name":"Zgorzelec"},{"@type":"Country","name":"Polska"}],"telephone":"+48 534 788 402","hasMap":"https://www.google.com/maps/search/?api=1&query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec","sameAs":["https://www.facebook.com/ksturowsa"]},{"@type":"WebSite","@id":"https://ksturow.eu/#www","url":"https://ksturow.eu/","name":"KS Turów","inLanguage":"de","publisher":{"@id":"https://ksturow.eu/#klub"}}]}</script>
 <!-- GOOGLE ANALYTICS 4: NIE włączaj bez zgody użytkownika (RODO / ePrivacy).
@@ -1350,6 +1371,8 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     images: [{ id: 'tti1', hidden: false, img: 'img/harmonogram-treningow.webp', caption: T('Harmonogram treningów — mała i duża sala', 'Training timetable — small and main hall', 'Trainingsplan — kleine und große Halle') }]
   };
 
+  // tło całej strony: zdjęcia przenikające się za treścią (włączane w panelu, zdjęcia dodaje klub)
+  S.bgshow = { on: true, interval: '7', effect: 'zoom', order: 'shuffle', level: 'medium', images: [] };
   // mapa Google wczytuje się sama; logo klubu przy kursorze; kurtyna przy zmianie języka
   S.contact.mapAuto = true;
   S.settings.cursorLogo = true;
@@ -3113,6 +3136,44 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   });
   addEventListener('pageshow', function (e) { if (e.persisted) { var f = doc.querySelector('.fx'); if (f) f.remove(); try { sessionStorage.removeItem('kst-fx'); } catch (er) { } } });
 
+  /* ---------- Tło strony: zdjęcia przenikające się za treścią (stałe przy przewijaniu) ---------- */
+  var BG = { el: null, timer: 0, list: [], i: 0, key: '' };
+  function initBgShow() {
+    var C = KST.state.bgshow || {}, list = (C.images || []).filter(function (x) { return x && !x.hidden && x.img; }).map(function (x) { return R.src(x.img, KST.ctx()); });
+    var on = C.on !== false && list.length > 0, key = on ? JSON.stringify([list, C.interval, C.effect, C.order, C.level]) : '';
+    html.classList.toggle('has-bg', on);
+    html.setAttribute('data-bglevel', C.level || 'medium');
+    if (key === BG.key) return; BG.key = key;
+    clearTimeout(BG.timer); if (BG.el) { BG.el.remove(); BG.el = null; }
+    if (!on) return;
+    var el = doc.createElement('div'); el.className = 'bgshow' + (C.effect === 'fade' ? '' : ' bgshow--zoom'); el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<div class="bgshow__l"></div><div class="bgshow__l"></div><div class="bgshow__veil"></div>';
+    doc.body.insertBefore(el, doc.body.firstChild); BG.el = el;
+    var order = list.slice();
+    if (C.order !== 'seq') for (var k = order.length - 1; k > 0; k--) { var r = Math.floor(Math.random() * (k + 1)), t = order[k]; order[k] = order[r]; order[r] = t; }
+    BG.list = order; BG.i = 0;
+    var layers = el.querySelectorAll('.bgshow__l'), front = 0, ORIG = ['20% 30%', '80% 30%', '50% 80%', '30% 70%', '70% 60%', '50% 20%'];
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, wait = Math.max(4, +C.interval || 7) * 1000;
+    function show(url) {
+      var L = layers[front]; front = 1 - front;
+      L.style.backgroundImage = 'url("' + url.replace(/"/g, '%22') + '")';
+      L.style.transformOrigin = ORIG[Math.floor(Math.random() * ORIG.length)];
+      L.classList.remove('is-on'); void L.offsetWidth; L.classList.add('is-on');
+      layers[front].classList.remove('is-on');
+    }
+    function next() {
+      if (!BG.el) return;
+      var url = BG.list[BG.i % BG.list.length]; BG.i++;
+      var im = new Image(); im.onload = im.onerror = function () { if (BG.el !== el) return; show(url); if (BG.list.length > 1 && !reduce) BG.timer = setTimeout(next, wait); };
+      im.src = url;
+    }
+    next();
+  }
+  doc.addEventListener('visibilitychange', function () { // w ukrytej karcie nie zmieniamy zdjęć
+    if (!BG.el) return;
+    BG.el.classList.toggle('is-paused', doc.visibilityState !== 'visible');
+  });
+
   /* ---------- Logo klubu przy kursorze (tylko mysz / gładzik) ---------- */
   function initCursorLogo() {
     var st = KST.state && KST.state.settings, el = doc.querySelector('.curlogo');
@@ -3177,7 +3238,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     filter(saved && tt.querySelector('button[data-ttg="' + saved + '"]') ? saved : '');
   }
 
-  function initDynamic() { initCursorLogo(); initTimetable(); initFacebook(); initTicker(); initSlider(); initGallery(); initEmbeds(); initForm(); initHistory(); initTabs(); initInfo(); initTimelineSpy(); tick(); }
+  function initDynamic() { initBgShow(); initCursorLogo(); initTimetable(); initFacebook(); initTicker(); initSlider(); initGallery(); initEmbeds(); initForm(); initHistory(); initTabs(); initInfo(); initTimelineSpy(); tick(); }
 
   /* ---------- Start ---------- */
   function boot() {
@@ -3367,6 +3428,13 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       ],
       make: function () { return { id: uid(), hidden: false, name: T(''), desc: T(''), age: T(''), schedule: T(''), price: T(''), img: '', badge: T(''), isNew: false, btn: 'join' }; },
       sum: function (it) { return [tr(it.age, 'pl'), tr(it.schedule, 'pl')].filter(Boolean).join(' · '); }
+    },
+    bgImages: {
+      path: 'bgshow.images', name: 'Zdjęcia tła', one: 'zdjęcie tła', titleK: 'img', imgK: 'img', sec: null,
+      fields: [{ k: 'img', l: 'Zdjęcie tła (najlepiej poziome, min. 1600 px szerokości)', t: 'img', req: 1 }],
+      make: function () { return { id: uid(), hidden: false, img: '' }; },
+      title: function (it, i) { return 'Zdjęcie tła'; },
+      sum: function () { return ''; }
     },
     gallery: {
       path: 'gallery', name: 'Galeria', one: 'zdjęcie', titleK: 'caption', imgK: 'img', sec: 'galeria',
@@ -3644,6 +3712,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       { id: 'home', t: 'Strona główna', sec: 'start', d: 'Nazwa w nagłówku obok logo, pierwszy ekran: tytuł, wprowadzenie, zdjęcia slidera, atuty oraz tytuł i opis dla Google.' },
       { id: 'about', t: 'O klubie', sec: 'o-klubie', d: 'Tekst o klubie, dwa zdjęcia i wyróżniki.' },
       { id: 'facebook', t: 'Facebook', sec: 'facebook', d: 'Najnowsze wpisy z profilu klubu na Facebooku — oficjalna wtyczka strony Facebooka, zawsze aktualna, bez kluczy i opłat.' },
+      { id: 'bgshow', t: 'Tło strony (zdjęcia)', coll: 'bgImages', d: 'Zdjęcia w tle całej strony — przenikają się i zostają w miejscu podczas przewijania. Włączanie, tempo, efekt i siła tła.' },
       { id: 'gallery', t: 'Galeria i Instagram', coll: 'gallery', sec: 'galeria', d: 'Zdjęcia z podpisami i kategoriami (filtry na stronie) oraz widżet Instagrama.' }] },
     { g: 'Drużyny', items: teamNavItems() },
     { g: 'Zaufanie', items: [
@@ -3924,10 +3993,11 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   }
   function onChange(e) {
     var el = e.target;
+    if (el.id === 'cmsp-bgmulti') return bgMulti(el);
     if (el.getAttribute('data-upload')) return upload(el);
     var fk = el.getAttribute('data-fk'); if (!fk) return;
     if (rootOf(el) === S()) { clearTimeout(P.saveTimer); commit('Zapisano zmiany.'); if (/^settings\.langs\.(en|de)$/.test(fk) && readVal(el) && S().settings.autoTranslate && K.mode === 'server') { var lg = fk.split('.').pop(); toast('Tłumaczę brakujące teksty na ' + lg.toUpperCase() + '…'); translateAll('empty', [lg]).then(function (c) { toast('Przetłumaczono ' + c + ' pól na ' + lg.toUpperCase() + '.'); }, function (e) { toast(e.msg || 'Błąd tłumaczenia.'); }); }
-    if (/^settings\.langs\./.test(fk) || /^teams\.\d+\.(section|showNumbers)$/.test(fk) || fk === 'form.method' || fk === 'facebook.mode' || /^teams\.\d+\.photosOk$/.test(fk)) { var y = P.el.querySelector('.cmsp-main').scrollTop; go(P.page); P.el.querySelector('.cmsp-main').scrollTop = y; var f2 = P.el.querySelector('[data-fk="' + fk + '"]'); if (f2) f2.focus(); } if (/^hours\.week\.\d\.open$/.test(fk)) { go('hours'); var hb = P.el.querySelector('[data-fk="' + fk + '"]'); if (hb) hb.focus(); } if (/^sections\.[^.]+\.on$/.test(fk)) { go('sections'); var sw = P.el.querySelector('[data-fk="' + fk + '"]'); if (sw) sw.focus(); } }
+    if (/^settings\.langs\./.test(fk) || /^teams\.\d+\.(section|showNumbers)$/.test(fk) || fk === 'form.method' || fk === 'facebook.mode' || /^teams\.\d+\.photosOk$/.test(fk) || /^bgshow\./.test(fk)) { var y = P.el.querySelector('.cmsp-main').scrollTop; go(P.page); P.el.querySelector('.cmsp-main').scrollTop = y; var f2 = P.el.querySelector('[data-fk="' + fk + '"]'); if (f2) f2.focus(); } if (/^hours\.week\.\d\.open$/.test(fk)) { go('hours'); var hb = P.el.querySelector('[data-fk="' + fk + '"]'); if (hb) hb.focus(); } if (/^sections\.[^.]+\.on$/.test(fk)) { go('sections'); var sw = P.el.querySelector('[data-fk="' + fk + '"]'); if (sw) sw.focus(); } }
   }
 
   /* ---------- Zdjęcia: zmniejszenie do max 1400 px i zapis jako JPEG ---------- */
@@ -3954,6 +4024,28 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       im.src = rd.result;
     };
     rd.readAsDataURL(file);
+  }
+  // wiele zdjęć tła naraz: zmniejszenie do 1920 px (JPEG) i dopisanie do listy
+  function bgMulti(input) {
+    var files = [].slice.call(input.files || []).filter(function (f) { return /^image\//.test(f.type); }); if (!files.length) return;
+    var st = P.el.querySelector('.cmsp-bgstat'), done = 0, list = S().bgshow.images;
+    function say(m) { if (st) st.textContent = m; }
+    function one(f) {
+      return new Promise(function (res) {
+        var rd = new FileReader(); rd.onload = function () {
+          var im = new Image(); im.onload = function () {
+            var s = Math.min(1, 1920 / Math.max(im.naturalWidth, im.naturalHeight)), c = doc.createElement('canvas');
+            c.width = Math.round(im.naturalWidth * s); c.height = Math.round(im.naturalHeight * s); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+            var d = c.toDataURL('image/jpeg', 0.8);
+            (K.mode === 'server' ? K.uploadImage(d) : Promise.resolve(d)).then(function (u) { list.push({ id: uid(), hidden: false, img: u }); done++; say('Dodawanie zdjęć ' + done + '/' + files.length + '…'); res(); }, function () { res(); });
+          }; im.onerror = function () { res(); }; im.src = rd.result;
+        }; rd.readAsDataURL(f);
+      });
+    }
+    say('Dodawanie zdjęć 0/' + files.length + '…');
+    files.reduce(function (p, f) { return p.then(function () { return one(f); }); }, Promise.resolve()).then(function () {
+      input.value = ''; commit('Dodano ' + done + ' zdjęć tła.'); go('bgshow');
+    });
   }
   function sendImg(input, dataUrl) {
     if (K.mode !== 'server') { setImg(input, input.getAttribute('data-upload'), dataUrl); return; }
@@ -4568,6 +4660,19 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     promos: function () { return listHtml('promos'); },
     news: function () { return listHtml('news'); },
     groups: function () { return listHtml('groups'); },
+    bgshow: function () {
+      return form([
+        { k: 'on', l: 'Pokazuj zdjęcia w tle całej strony (działa, gdy dodane jest min. 1 zdjęcie)', t: 'bool' },
+        { k: 'effect', l: 'Efekt', t: 'select', half: 1, opts: function () { return [['zoom', 'Przenikanie + powolne przybliżanie'], ['fade', 'Samo przenikanie']]; } },
+        { k: 'interval', l: 'Zmiana zdjęcia co', t: 'select', half: 1, opts: function () { return [['5', '5 sekund'], ['7', '7 sekund'], ['10', '10 sekund'], ['15', '15 sekund']]; } },
+        { k: 'order', l: 'Kolejność', t: 'select', half: 1, opts: function () { return [['shuffle', 'Losowa (za każdym wejściem inna)'], ['seq', 'Po kolei, jak na liście']]; } },
+        { k: 'level', l: 'Jak mocno widać tło spod treści', t: 'select', half: 1, opts: function () { return [['subtle', 'Delikatnie'], ['medium', 'Średnio'], ['strong', 'Wyraźnie']]; } }
+      ], 'bgshow', 'Tło strony ze zdjęć') +
+        '<section class="cmsp-card"><h2>Dodaj wiele zdjęć naraz</h2><p>Zaznacz kilka lub kilkanaście zdjęć (np. z meczów, treningów, hali). Zostaną zmniejszone do 1920 px i dodane na koniec listy.</p>' +
+        '<div class="cmsp-actions"><label class="cmsp-btn cmsp-btn--pri" for="cmsp-bgmulti">+ Wybierz zdjęcia</label><input type="file" id="cmsp-bgmulti" accept="image/*" multiple class="sr"></div>' +
+        '<p class="cmsp-bgstat cmsp-muted" aria-live="polite"></p><p class="cmsp-muted">Zdjęcia z czytelnym, spokojnym tłem wyglądają najlepiej. Treść strony zawsze pozostaje czytelna — sekcje są lekko przezroczyste. Na telefonach przy ustawieniu „ogranicz ruch” tło jest nieruchome.</p></section>' +
+        listHtml('bgImages');
+    },
     timetable: function () {
       return form([
         { k: 'on', l: 'Pokazuj harmonogram treningów na stronie (sekcja „Harmonogram treningów”)', t: 'bool' },

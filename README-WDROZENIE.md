@@ -149,6 +149,9 @@ Sekcja „Harmonogram treningów” (dawniej „Treningi”): tydzień w kolumna
 - Drużyna → „Wielkość zdjęć zawodników”: duże (zdjęcie na całą kartę) albo małe miniatury obok nazwiska; „Wielkość zdjęć sztabu szkoleniowego”: małe kółko albo większe kółko.
 - Za zgody na publikację wizerunku (u niepełnoletnich — rodziców) i prawa do zdjęć odpowiada klub.
 
+### Tło strony ze zdjęć
+Panel → Wizerunek → Tło strony (zdjęcia): włącznik, efekt (przenikanie lub przenikanie z powolnym przybliżeniem), tempo zmiany (5–15 s), kolejność (losowa / po kolei) i siła tła (delikatnie / średnio / wyraźnie). „+ Wybierz zdjęcia” dodaje wiele zdjęć naraz (zmniejszane do 1920 px). Zdjęcia stoją w miejscu podczas przewijania, a sekcje strony są lekko przezroczyste. Funkcja działa, gdy dodane jest co najmniej jedno zdjęcie.
+
 ### Facebook
 Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
 - **Wpisy w wyglądzie strony** (domyślnie): najpierw treść wpisu, zdjęcie pod spodem (albo nad — do wyboru), „Czytaj więcej” przy długich wpisach, liczba wpisów 1–20. Wpisy pobiera serwer strony co 15 minut, zdjęcia idą przez serwer strony (odwiedzający nie łączy się z Facebookiem — bez cookies, zgodnie z RODO). Wymaga **tokenu strony**.
