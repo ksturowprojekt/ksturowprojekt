@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mvw9mq88">
+<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mvwa17wq">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -814,6 +814,12 @@ html.fx-in.fx-out body::after{animation:fxReveal .55s cubic-bezier(.7,0,.3,1) fo
 /* sztab szkoleniowy — jeszcze mniejsze miniatury */
 .coaches--sm li{padding:4px 14px 4px 4px;gap:8px}
 .coaches--sm .coaches__ini{width:30px;height:30px;font-size:.8rem}
+/* sztab szkoleniowy — większe zdjęcia w kółku (ustawienie drużyny) */
+.coaches--big ul{gap:14px}
+.coaches--big li{padding:8px 22px 8px 8px;gap:14px}
+.coaches--big .coaches__ini{width:76px;height:76px;font-size:1.5rem;box-shadow:0 0 0 3px var(--o2)}
+.coaches--big b{font-size:1.08rem}
+@media(max-width:560px){.coaches--big .coaches__ini{width:64px;height:64px}}
 
 </style>
 <script type="application/ld+json" id="ld">{"@context":"https://schema.org","@graph":[{"@type":"SportsClub","@id":"https://ksturow.eu/#klub","name":"KS Turów","sport":"Basketball","url":"https://ksturow.eu/de/","logo":"https://ksturow.eu/img/ks-turow-zgorzelec-logo-512.png","image":"https://ksturow.eu/img/og-image.jpg","description":"KS Turów – Basketballverein in Zgorzelec, Polnischer Meister 2014. Herrenteam, Nachwuchs U13–U17, Vereinsgeschichte und Sichtungen. Jetzt Kontakt aufnehmen!","address":{"@type":"PostalAddress","addressLocality":"Zgorzelec","addressCountry":"PL","streetAddress":"ul. Lubańska 9A","postalCode":"59-900"},"areaServed":[{"@type":"City","name":"Zgorzelec"},{"@type":"Country","name":"Polska"}],"telephone":"+48 534 788 402","hasMap":"https://www.google.com/maps/search/?api=1&query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec","sameAs":["https://www.facebook.com/ksturowsa"]},{"@type":"WebSite","@id":"https://ksturow.eu/#www","url":"https://ksturow.eu/","name":"KS Turów","inLanguage":"de","publisher":{"@id":"https://ksturow.eu/#klub"}}]}</script>
@@ -1900,10 +1906,10 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   function coachesHtml(q, ctx, headTag) {
     var L = X[ctx.lang], cs = visible(q.coaches);
     if (!cs.length) return '';
-    return '<div class="coaches' + (q.photoSize === 'small' ? ' coaches--sm' : '') + '"><' + headTag + ' class="coaches__h">' + esc(L.staff) + '</' + headTag + '><ul>' + cs.map(function (c) {
+    return '<div class="coaches' + (q.coachSize === 'big' ? ' coaches--big' : q.photoSize === 'small' ? ' coaches--sm' : '') + '"><' + headTag + ' class="coaches__h">' + esc(L.staff) + '</' + headTag + '><ul>' + cs.map(function (c) {
       var bio = ctx.bios && hasBio(c) && q.id ? '<button type="button" class="pl__open" data-bio="' + esc(q.id + '|' + c.id) + '" aria-haspopup="dialog"><span class="sr">' + esc(L.more2 + ': ' + c.name) + '</span></button>' : '';
       if (q.showPhotos === false) c = Object.assign({}, c, { img: '' });
-      var face = c.img ? '<img class="coaches__ini" src="' + esc(src(c.img, ctx)) + '" alt="" width="40" height="40" loading="lazy">' : '<span class="coaches__ini" aria-hidden="true">' + esc(initials(c.name)) + '</span>';
+      var face = c.img ? '<img class="coaches__ini" src="' + esc(src(c.img, ctx)) + '" alt="" width="' + (q.coachSize === 'big' ? 96 : 40) + '" height="' + (q.coachSize === 'big' ? 96 : 40) + '" loading="lazy">' : '<span class="coaches__ini" aria-hidden="true">' + esc(initials(c.name)) + '</span>';
       return '<li' + (bio ? ' class="is-bio"' : '') + '>' + face + '<span><b>' + esc(c.name) + '</b><small>' + esc(tr(c.role, ctx.lang)) + (bio ? ' · <u>' + esc(L.more2) + '</u>' : '') + '</small></span>' + bio + '</li>';
     }).join('') + '</ul></div>';
   }
@@ -3498,6 +3504,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       { k: 'showNumbers', l: 'Pokazuj numery zawodników na koszulkach (odznaczone = zawodnicy bez żadnych cyfr)', t: 'bool' },
       { k: 'showPhotos', l: 'Pokazuj zdjęcia zawodników i trenerów na stronie (odznaczone = karty bez zdjęć; wgrane zdjęcia zostają w panelu)', t: 'bool' },
       { k: 'photoSize', l: 'Wielkość zdjęć zawodników', t: 'select', half: 1, opts: function () { return [['big', 'Duże — zdjęcie na całą kartę (jak dotąd)'], ['small', 'Małe miniatury obok nazwiska']]; } },
+      { k: 'coachSize', l: 'Wielkość zdjęć sztabu szkoleniowego', t: 'select', half: 1, opts: function () { return [['small', 'Małe kółko (jak dotąd)'], ['big', 'Większe kółko']]; } },
       { k: 'photosOk', l: 'Klub ma zgody na publikację wizerunku zawodników tej drużyny (przy niepełnoletnich — zgody rodziców) — pozwala pobierać zdjęcia przy synchronizacji', t: 'bool' },
       { k: 'league', l: 'Rozgrywki (puste = nie wyświetla się)', t: 'text', i18n: 1 }, { k: 'season', l: 'Sezon (puste = nie wyświetla się)', t: 'text', half: 1 },
       { k: 'venue', l: 'Hala (puste = nie wyświetla się)', t: 'text', i18n: 1 },

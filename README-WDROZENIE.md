@@ -146,7 +146,7 @@ Sekcja „Harmonogram treningów” (dawniej „Treningi”): tydzień w kolumna
 - Drużyna → „Pokazuj zdjęcia zawodników na stronie” — włącza/wyłącza zdjęcia na kartach tej drużyny (wgrane zdjęcia zostają w panelu).
 - Drużyna → „Klub ma zgody na publikację wizerunku…” — dopiero po zaznaczeniu synchronizacja pobiera zdjęcia z PZKosz/DZKosz (DZKosz: ze stron profili zawodników). W oknie synchronizacji widać miniatury; domyślnie zaznaczeni są zawodnicy bez zdjęcia. Zdjęcia są kopiowane do bazy strony (KV), zaślepki „brak zdjęcia” są pomijane. DALK nie publikuje zdjęć zawodników.
 - Zdjęcia trenerów: pobierane z PZKosz (tabela sztabu). DZKosz podaje trenerów tylko jako tekst — bez zdjęć.
-- Drużyna → „Wielkość zdjęć zawodników”: duże (zdjęcie na całą kartę) albo małe miniatury obok nazwiska; przy małych miniatury sztabu szkoleniowego są jeszcze mniejsze.
+- Drużyna → „Wielkość zdjęć zawodników”: duże (zdjęcie na całą kartę) albo małe miniatury obok nazwiska; „Wielkość zdjęć sztabu szkoleniowego”: małe kółko albo większe kółko.
 - Za zgody na publikację wizerunku (u niepełnoletnich — rodziców) i prawa do zdjęć odpowiada klub.
 
 ### Facebook
