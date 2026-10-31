@@ -26,6 +26,20 @@ export async function onRequestPost({ request, env }) {
   if (!env.CMS) return noKv();
   if (!(await authFromRequest(request, env))) return json({ ok: false, error: 'auth' }, 401);
   let b = {}; try { b = await request.json(); } catch (e) { }
+  // skopiowanie zdjęcia zawodnika z serwisu rozgrywek (przy synchronizacji składu) do bazy strony
+  if (b.fetch) {
+    let u; try { u = new URL(String(b.fetch)); } catch (e) { return json({ ok: false, error: 'url' }, 400); }
+    if (u.protocol !== 'https:' || !/(^|\.)(pzkosz\.pl|dzkosz\.wroclaw\.pl|dzkosz\.pl|geniussports\.com)$/i.test(u.hostname)) return json({ ok: false, error: 'url', message: 'Niedozwolony adres zdjęcia.' }, 400);
+    const r = await fetch(u.toString(), { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KSTurowSite/1.0; +https://ksturow.eu)', 'Accept': 'image/*' } });
+    const type = (r.headers.get('Content-Type') || '').split(';')[0].trim();
+    if (!r.ok || !/^image\/(jpeg|png|webp|gif)$/i.test(type)) return json({ ok: false, error: 'fetch', message: 'Nie udało się pobrać zdjęcia (HTTP ' + r.status + ').' }, 502);
+    const buf = new Uint8Array(await r.arrayBuffer());
+    if (buf.length < 600 || buf.length > 4 * 1024 * 1024) return json({ ok: false, error: 'size' }, 422);
+    const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', buf))].map(x => x.toString(16).padStart(2, '0')).join('');
+    const id = h.slice(0, 32) + '.' + type.split('/')[1].replace('jpeg', 'jpg');
+    if (!(await env.CMS.get('img:' + id, 'stream'))) await env.CMS.put('img:' + id, buf, { metadata: { type } });
+    return json({ ok: true, url: '/api/img/' + id, bytes: buf.length });
+  }
   const m = /^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(String(b.data || ''));
   if (!m) return json({ ok: false, error: 'format' }, 400);
   const bin = Uint8Array.from(atob(m[2]), c => c.charCodeAt(0));

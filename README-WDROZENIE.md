@@ -142,6 +142,11 @@ Sekcja „Harmonogram treningów” (dawniej „Treningi”): tydzień w kolumna
 - Logo klubu przy kursorze (tylko mysz/gładzik), wyłączane w tym samym miejscu.
 - Mapa Google w sekcji Kontakt wczytuje się sama, gdy odwiedzający zbliża się do sekcji (Klub → Dane kontaktowe → przełącznik). Google może wtedy zapisywać pliki cookie — warto wspomnieć o tym w polityce prywatności.
 
+### Zdjęcia zawodników
+- Drużyna → „Pokazuj zdjęcia zawodników na stronie” — włącza/wyłącza zdjęcia na kartach tej drużyny (wgrane zdjęcia zostają w panelu).
+- Drużyna → „Klub ma zgody na publikację wizerunku…” — dopiero po zaznaczeniu synchronizacja pobiera zdjęcia z PZKosz/DZKosz (DZKosz: ze stron profili zawodników). W oknie synchronizacji widać miniatury; domyślnie zaznaczeni są zawodnicy bez zdjęcia. Zdjęcia są kopiowane do bazy strony (KV), zaślepki „brak zdjęcia” są pomijane. DALK nie publikuje zdjęć zawodników.
+- Za zgody na publikację wizerunku (u niepełnoletnich — rodziców) i prawa do zdjęć odpowiada klub.
+
 ### Facebook
 Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
 - **Wpisy w wyglądzie strony** (domyślnie): najpierw treść wpisu, zdjęcie pod spodem (albo nad — do wyboru), „Czytaj więcej” przy długich wpisach, liczba wpisów 1–20. Wpisy pobiera serwer strony co 15 minut, zdjęcia idą przez serwer strony (odwiedzający nie łączy się z Facebookiem — bez cookies, zgodnie z RODO). Wymaga **tokenu strony**.

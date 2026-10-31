@@ -300,6 +300,37 @@ function parseSchedule(html, filter) {
 
 /* POST /api/sync  { url } — pobiera skład drużyny ze strony PZKosz / DZKosz (tylko dla zalogowanego administratora)
    Zwraca listę zawodników i trenerów; porównanie i decyzję co dodać/usunąć podejmuje panel. */
+/* ---- zdjęcia zawodników (system ESOR: PZKosz / DZKosz) ----
+   PZKosz: zdjęcie w wierszu tabeli składu (background-image); DZKosz: tylko na stronie profilu zawodnika. */
+const PHOTO_RE = /(?:https?:)?\/\/[^"'\s)]*internalfiles\/image\/zawodnicy\/[^"'\s)]+?\.(?:jpe?g|png|webp)/gi;
+function keyName(n) { return String(n || '').toLocaleLowerCase('pl').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ł/g, 'l').replace(/[^a-z\s-]/g, ' ').split(/[\s-]+/).filter(Boolean).sort().join(' '); }
+async function rosterPhotos(html, pageUrl) {
+  const out = {};
+  const abs = u => { try { return new URL(u.startsWith('//') ? 'https:' + u : u, pageUrl).toString(); } catch (e) { return ''; } };
+  const photos = t => String(t).match(PHOTO_RE) || [];
+  const nameOf = frag => { const h = /<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i.exec(frag); return h ? clean(h[1]) : ''; };
+  for (const m of String(html).matchAll(/<tr[\s\S]*?<\/tr>/gi)) {
+    const ph = photos(m[0])[0]; if (!ph) continue;
+    let name = nameOf(m[0]);
+    if (!name) { const cells = [...m[0].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(c => clean(c[1])); name = cells.find(c => NAME_OK.test(c)) || ''; }
+    if (name) out[keyName(personName(name))] = abs(ph);
+  }
+  const links = [];
+  for (const m of String(html).matchAll(/<a\b[^>]*href\s*=\s*"([^"]*\/zawodnicy\/p\/(\d+)\/[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi)) {
+    const name = nameOf(m[3]) || clean(m[3].replace(/Urodzon[\s\S]*/i, '')).replace(/^\d+\s+/, '');
+    if (!name) continue;
+    const k = keyName(personName(name)); if (out[k]) continue;
+    const own = photos(m[3])[0]; if (own) { out[k] = abs(own); continue; }
+    links.push([k, abs(m[1]), m[2]]);
+  }
+  for (let i = 0; i < links.length && i < 40; i += 6) {
+    await Promise.all(links.slice(i, i + 6).map(async ([k, u, id]) => {
+      try { const all = photos(await fetchPage(u)); const ph = all.find(x => x.includes('/' + id + '.')) || all[0]; if (ph) out[k] = abs(ph); } catch (e) { }
+    }));
+  }
+  return out;
+}
+
 export async function onRequestPost({ request, env }) {
   FIBA_ORG = (env && env.FIBA_ORG) || '';
   if (!(await authFromRequest(request, env))) return json({ ok: false, error: 'auth' }, 401);
@@ -316,6 +347,7 @@ export async function onRequestPost({ request, env }) {
     const html = (await geniusRoster(url)) || await resolvePage(url);
     const r = parseRoster(html);
     if (!r.players.length) return json({ ok: false, error: 'empty', message: 'Nie znaleziono zawodników na tej stronie — układ strony mógł się zmienić.' }, 422);
+    if (b.photos) { try { const ph = await rosterPhotos(html, url); r.players.forEach(p => { const k = keyName(p.name); if (ph[k]) p.photo = ph[k]; }); } catch (e) { } }
     return json({ ok: true, url, fetchedAt: new Date().toISOString(), players: r.players, coaches: r.coaches });
   } catch (e) {
     return json({ ok: false, error: 'fetch', message: 'Nie udało się pobrać strony: ' + (e && e.message || e) }, 502);
