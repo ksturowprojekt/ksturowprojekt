@@ -165,7 +165,7 @@ Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
 Uwaga: zmiana hasła do konta Facebook administratora może unieważnić token — wtedy wklej nowy.
 
 ### Kolejność sekcji
-Panel → Klub → **Sekcje strony**: strzałki ▲▼ ustawiają, która sekcja jest nad którą (pierwszy ekran zawsze na górze, stopka na dole). „Ułóż menu w tej samej kolejności” porządkuje górne menu tak samo; „Przywróć domyślną kolejność” cofa zmiany. Kolejność zapisuje się na serwerze i widzą ją wszyscy odwiedzający.
+Panel → Klub → **Sekcje strony**: strzałki ▲▼ ustawiają, która sekcja jest nad którą (pierwszy ekran zawsze na górze, stopka na dole). „Ułóż menu w tej samej kolejności” porządkuje górne menu tak samo; „Przywróć domyślną kolejność” cofa zmiany. Przełącznik „Kolejność sekcji na stronie taka sama jak kolejność górnego menu” (domyślnie włączony, w „Menu strony” i „Sekcje strony”) pilnuje, żeby kolejne pozycje menu zawsze prowadziły w dół strony — zmiana kolejności w menu przestawia sekcje i odwrotnie. Kolejność zapisuje się na serwerze i widzą ją wszyscy odwiedzający.
 
 ### Formularz
 Telefon z numerem kierunkowym (+48 / +49 / +44 / +420), tylko cyfry, długość 9 (PL) lub 7–15. Restrykcyjna walidacja e-maila, imienia i treści na żywo i przy wysyłce; czerwone komunikaty; blokada wielokrotnego wysłania.

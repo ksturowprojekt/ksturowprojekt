@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-base="../" data-site="https://ksturow.eu/" data-build="mvwat5jk">
+<html lang="en" data-base="../" data-site="https://ksturow.eu/" data-build="mvwbc9so">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1376,6 +1376,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   // mapa Google wczytuje się sama; logo klubu przy kursorze; kurtyna przy zmianie języka
   S.contact.mapAuto = true;
   S.settings.cursorLogo = true;
+  S.settings.syncOrder = true; // kolejność sekcji na stronie = kolejność górnego menu
   S.settings.langFx = true;
 
   // koordynator grup młodzieżowych — karta na górze sekcji „Drużyny młodzieżowe”
@@ -2270,10 +2271,17 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
 
   // kolejność sekcji ustawiona w panelu („Sekcje strony”); pierwszy ekran zawsze na górze,
   // sekcje nieznane w zapisanej kolejności trafiają w swoje domyślne miejsce
-  function order(S) {
+  function order(S, noSync) {
     var rest = SECTIONS.slice(1), o = [];
     (S.secOrder || []).forEach(function (id) { if (rest.indexOf(id) >= 0 && o.indexOf(id) < 0) o.push(id); });
     rest.forEach(function (id, i) { if (o.indexOf(id) < 0) { var at = i ? o.indexOf(rest[i - 1]) + 1 : 0; o.splice(at, 0, id); } });
+    // „kolejność sekcji = kolejność menu”: sekcje z menu zajmują swoje miejsca w kolejności menu,
+    // sekcje spoza menu (np. Facebook, Informacje) zostają tam, gdzie są
+    if (!noSync && S.settings && S.settings.syncOrder !== false && S.menu && S.menu.length) {
+      var mids = S.menu.map(function (m) { return m.id; }).filter(function (id) { return o.indexOf(id) >= 0; });
+      var slots = []; o.forEach(function (id, i) { if (mids.indexOf(id) >= 0) slots.push(i); });
+      slots.forEach(function (slot, k) { o[slot] = mids[k]; });
+    }
     return ['start'].concat(o);
   }
   var SECTIONS = ['start', 'aktualnosci', 'nabory', 'o-klubie', 'historia', 'osiagniecia', 'zespol', 'mlodziez', 'terminarz', 'grupy', 'galeria', 'instagram', 'facebook', 'certyfikaty', 'sponsorzy', 'partnerzy', 'informacje', 'kontakt'];
@@ -3997,7 +4005,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     if (el.getAttribute('data-upload')) return upload(el);
     var fk = el.getAttribute('data-fk'); if (!fk) return;
     if (rootOf(el) === S()) { clearTimeout(P.saveTimer); commit('Zapisano zmiany.'); if (/^settings\.langs\.(en|de)$/.test(fk) && readVal(el) && S().settings.autoTranslate && K.mode === 'server') { var lg = fk.split('.').pop(); toast('Tłumaczę brakujące teksty na ' + lg.toUpperCase() + '…'); translateAll('empty', [lg]).then(function (c) { toast('Przetłumaczono ' + c + ' pól na ' + lg.toUpperCase() + '.'); }, function (e) { toast(e.msg || 'Błąd tłumaczenia.'); }); }
-    if (/^settings\.langs\./.test(fk) || /^teams\.\d+\.(section|showNumbers)$/.test(fk) || fk === 'form.method' || fk === 'facebook.mode' || /^teams\.\d+\.photosOk$/.test(fk) || /^bgshow\./.test(fk)) { var y = P.el.querySelector('.cmsp-main').scrollTop; go(P.page); P.el.querySelector('.cmsp-main').scrollTop = y; var f2 = P.el.querySelector('[data-fk="' + fk + '"]'); if (f2) f2.focus(); } if (/^hours\.week\.\d\.open$/.test(fk)) { go('hours'); var hb = P.el.querySelector('[data-fk="' + fk + '"]'); if (hb) hb.focus(); } if (/^sections\.[^.]+\.on$/.test(fk)) { go('sections'); var sw = P.el.querySelector('[data-fk="' + fk + '"]'); if (sw) sw.focus(); } }
+    if (/^settings\.langs\./.test(fk) || /^teams\.\d+\.(section|showNumbers)$/.test(fk) || fk === 'form.method' || fk === 'facebook.mode' || /^teams\.\d+\.photosOk$/.test(fk) || /^bgshow\./.test(fk) || fk === 'settings.syncOrder') { var y = P.el.querySelector('.cmsp-main').scrollTop; go(P.page); P.el.querySelector('.cmsp-main').scrollTop = y; var f2 = P.el.querySelector('[data-fk="' + fk + '"]'); if (f2) f2.focus(); } if (/^hours\.week\.\d\.open$/.test(fk)) { go('hours'); var hb = P.el.querySelector('[data-fk="' + fk + '"]'); if (hb) hb.focus(); } if (/^sections\.[^.]+\.on$/.test(fk)) { go('sections'); var sw = P.el.querySelector('[data-fk="' + fk + '"]'); if (sw) sw.focus(); } }
   }
 
   /* ---------- Zdjęcia: zmniejszenie do max 1400 px i zapis jako JPEG ---------- */
@@ -4286,7 +4294,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   function sectionsPage() {
     var s = S().sections, ctx = K.ctx();
     var ids = R.order(S()).filter(function (id) { return SECN[id] && s[id]; });
-    return '<section class="cmsp-card"><p><b>Kolejność na stronie:</b> strzałki ▲▼ przesuwają sekcję wyżej lub niżej (od góry do dołu strony). Pierwszy ekran jest zawsze na górze, stopka na dole. Kolejność górnego menu ustawiasz osobno w „Menu strony” — albo jednym kliknięciem ułóż ją tak samo jak sekcje.</p>' +
+    return form([{ k: 'syncOrder', l: 'Kolejność sekcji na stronie taka sama jak kolejność górnego menu (klikając kolejne pozycje menu, strona zawsze przewija się w dół)', t: 'bool' }], 'settings', '') + '<section class="cmsp-card"><p><b>Kolejność na stronie:</b> strzałki ▲▼ przesuwają sekcję wyżej lub niżej (od góry do dołu strony). Pierwszy ekran jest zawsze na górze, stopka na dole. Kolejność górnego menu ustawiasz osobno w „Menu strony” — albo jednym kliknięciem ułóż ją tak samo jak sekcje.</p>' +
       '<div class="cmsp-actions"><button type="button" class="cmsp-btn" data-act="menuFromSecs">Ułóż menu w tej samej kolejności</button> <button type="button" class="cmsp-btn" data-act="secReset">Przywróć domyślną kolejność</button></div></section>' +
       '<section class="cmsp-card" data-root="state"><ul class="cmsp-secs">' + ids.map(function (id, n) {
       var on = s[id].on, shown = R.sectionOn(S(), id, ctx);
@@ -4301,19 +4309,20 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
 
   ACTS.secMove = function (b) {
     var id = b.getAttribute('data-id'), d = +b.getAttribute('data-d');
-    var o = R.order(S()).slice(1), i = o.indexOf(id), j = i + d;
+    var o = R.order(S()).slice(1), i = o.indexOf(id), j = i + d; // aktualna kolejność na stronie
     // pomijaj sekcje niewidoczne w panelu (np. Instagram bez kodu), żeby jedno kliknięcie zawsze coś zmieniało
     while (j >= 0 && j < o.length && !SECN[o[j]]) j += d;
     if (i < 0 || j < 0 || j >= o.length) return;
     o.splice(i, 1); o.splice(j, 0, id); S().secOrder = o;
+    if (S().settings.syncOrder !== false) sortMenuBy(o); // menu podąża za sekcjami
     commit('Zmieniono kolejność sekcji na stronie.'); go('sections');
     var nb = P.el.querySelector('[data-act="secMove"][data-id="' + id + '"][data-d="' + d + '"]');
     (nb && !nb.disabled ? nb : P.el.querySelector('[data-act="secMove"][data-id="' + id + '"]:not([disabled])') || P.el.querySelector('.cmsp-main')).focus();
   };
-  ACTS.secReset = function () { delete S().secOrder; commit('Przywrócono domyślną kolejność sekcji.'); go('sections'); };
+  ACTS.secReset = function () { delete S().secOrder; if (S().settings.syncOrder !== false) sortMenuBy(R.order(S(), true)); commit('Przywrócono domyślną kolejność sekcji.'); go('sections'); };
+  function sortMenuBy(o) { (S().menu || []).sort(function (a, b) { var x = o.indexOf(a.id), y = o.indexOf(b.id); return (x < 0 ? 999 : x) - (y < 0 ? 999 : y); }); }
   ACTS.menuFromSecs = function () {
-    var o = R.order(S()), m = S().menu || [];
-    m.sort(function (a, b) { var x = o.indexOf(a.id), y = o.indexOf(b.id); return (x < 0 ? 999 : x) - (y < 0 ? 999 : y); });
+    sortMenuBy(R.order(S(), true));
     commit('Menu ułożone w tej samej kolejności co sekcje.'); go(P.page);
   };
 
@@ -4731,7 +4740,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     history: function () { return listHtml('history'); },
     achievements: function () { return listHtml('achievements'); },
     teams: function () { return form([{ k: 'bios', l: 'Okienka z opisem — po kliknięciu w zawodnika lub trenera pokazuje się jego opis / historia', t: 'bool', h: 'Opis wpisujesz przy każdej osobie (Edytuj → „Opis / historia”). Osoby bez opisu nie są klikalne.' }], 'settings', 'Opisy zawodników i trenerów') + listHtml('teams'); },
-    menu: function () { return '<section class="cmsp-card"><p>Kolejność poniżej = kolejność w górnym menu strony i w stopce. „Ukryj z menu” chowa tylko pozycję menu — sama sekcja dalej jest na stronie (wyłączysz ją w „Sekcje strony”). Kolejność samych sekcji na stronie zmienisz w „Sekcje strony”.</p><div class="cmsp-actions"><button type="button" class="cmsp-btn" data-act="menuFromSecs">Ułóż menu tak jak sekcje na stronie</button></div></section>' + listHtml('menu'); },
+    menu: function () { return form([{ k: 'syncOrder', l: 'Kolejność sekcji na stronie taka sama jak kolejność górnego menu (klikając kolejne pozycje menu, strona zawsze przewija się w dół)', t: 'bool' }], 'settings', '') + '<section class="cmsp-card"><p>Kolejność poniżej = kolejność w górnym menu strony i w stopce. „Ukryj z menu” chowa tylko pozycję menu — sama sekcja dalej jest na stronie (wyłączysz ją w „Sekcje strony”). Kolejność samych sekcji na stronie zmienisz w „Sekcje strony”.</p><div class="cmsp-actions"><button type="button" class="cmsp-btn" data-act="menuFromSecs">Ułóż menu tak jak sekcje na stronie</button></div></section>' + listHtml('menu'); },
     form: formPage,
     facebook: function () {
       return form([
