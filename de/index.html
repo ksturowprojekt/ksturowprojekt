@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mvwbusus">
+<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mvwdbyhw">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -841,6 +841,7 @@ html.has-bg .sec--dark,html.has-bg .sec--ach{background:rgba(36,30,32,var(--bgd)
 html.has-bg .sec--green{background:rgba(20,83,42,var(--bgd))}
 html.has-bg .hero__text{background:transparent}
 html.has-bg .spband{background:rgba(255,255,255,.96)}
+.mt__place{display:block;font-size:.78rem;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 </style>
 <script type="application/ld+json" id="ld">{"@context":"https://schema.org","@graph":[{"@type":"SportsClub","@id":"https://ksturow.eu/#klub","name":"KS Turów","sport":"Basketball","url":"https://ksturow.eu/de/","logo":"https://ksturow.eu/img/ks-turow-zgorzelec-logo-512.png","image":"https://ksturow.eu/img/og-image.jpg","description":"KS Turów – Basketballverein in Zgorzelec, Polnischer Meister 2014. Herrenteam, Nachwuchs U13–U17, Vereinsgeschichte und Sichtungen. Jetzt Kontakt aufnehmen!","address":{"@type":"PostalAddress","addressLocality":"Zgorzelec","addressCountry":"PL","streetAddress":"ul. Lubańska 9A","postalCode":"59-900"},"areaServed":[{"@type":"City","name":"Zgorzelec"},{"@type":"Country","name":"Polska"}],"telephone":"+48 534 788 402","hasMap":"https://www.google.com/maps/search/?api=1&query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec","sameAs":["https://www.facebook.com/ksturowsa"]},{"@type":"WebSite","@id":"https://ksturow.eu/#www","url":"https://ksturow.eu/","name":"KS Turów","inLanguage":"de","publisher":{"@id":"https://ksturow.eu/#klub"}}]}</script>
@@ -2008,7 +2009,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     if (notPlayed) res = '<span class="mt__np">' + esc(L.np) + '</span>';
     if (has && us) { var won = us === 'h' ? +m.sh > +m.sa : +m.sa > +m.sh; res = '<span class="mt__res mt__res--' + (won ? 'w' : 'l') + '">' + (won ? L.w : L.l) + '</span>'; }
     return '<li class="mt' + (us ? ' mt--' + us : '') + (notPlayed ? ' mt--np' : '') + '"><div class="mt__date"><b>' + d.getDate() + '.' + pad(d.getMonth() + 1) + '</b><small>' + esc(L.days[d.getDay()]) + (m.time ? ' · ' + esc(m.time) : '') + '</small></div>' +
-      '<div class="mt__teams"><span class="mt__team' + (us === 'h' ? ' is-us' : '') + '">' + esc(m.home) + '</span><span class="mt__team' + (us === 'a' ? ' is-us' : '') + '">' + esc(m.away) + '</span></div>' +
+      '<div class="mt__teams"><span class="mt__team' + (us === 'h' ? ' is-us' : '') + '">' + esc(m.home) + '</span><span class="mt__team' + (us === 'a' ? ' is-us' : '') + '">' + esc(m.away) + '</span>' + (m.place ? '<small class="mt__place">' + esc(m.place) + '</small>' : '') + '</div>' +
       (notPlayed ? '' : '<div class="mt__score">' + (has ? '<b>' + esc(m.sh) + '</b><b>' + esc(m.sa) + '</b>' : '<span>—</span>') + '</div>') + res + '</li>';
   }
   R.terminarz = function (S, ctx) {

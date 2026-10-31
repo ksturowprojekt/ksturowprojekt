@@ -266,9 +266,18 @@ function parseSchedule(html, filter) {
   // komórka „Drużyna A - Drużyna B” (np. DZKosz) → dwie osobne komórki
   const splitTeams = c => { const p = String(c).split(/\s+[-–—]\s+/); return p.length === 2 && p.every(x => /\p{L}{3,}/u.test(x) && !/^\d/.test(x)) && !DATE_RE.test(c) ? p.map(x => x.trim()) : [c]; };
   const SCORE = /^(\d{1,3})\s*[:\-–]\s*(\d{1,3})$/;
+  // PZKosz „Terminarz i wyniki” całej ligi: wiersz z drużynami i wynikiem, a POD nim osobny wiersz „data godz. | hala”
+  let pending = null;
   for (const raw of rows(html)) {
-    const cells = [].concat(...raw.map(splitTeams));
-    const all = cells.join(' | '); const date = isoDate(all); if (!date) continue;
+    let cells = [].concat(...raw.map(splitTeams)), place = '';
+    const isTeam = c => teamCell(c) && !/^\d/.test(c);
+    const date = isoDate(cells.join(' | '));
+    if (!date) { pending = cells.filter(isTeam).length >= 2 ? cells : null; continue; }
+    if (cells.filter(isTeam).length < 2 && pending) {
+      const dc = cells.find(c => isoDate(c)); place = (dc.split('|')[1] || '').trim();
+      cells = [dc.split('|')[0].trim()].concat(pending);
+    }
+    pending = null;
     const di = cells.findIndex(c => isoDate(c));
     const firstTeam = cells.findIndex((c, i) => i !== di && teamCell(c) && !/^\d/.test(c));
     let time = hm(cells[di].replace(/\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4}/, ''));
@@ -279,7 +288,7 @@ function parseSchedule(html, filter) {
     let sh = '', sa = '';
     if (sc) { sh = sc[1]; sa = sc[2]; }
     else { const nums = cells.filter((c, i) => i > firstTeam && /^\d{1,3}$/.test(c)); if (nums.length >= 2) { sh = nums[nums.length - 2]; sa = nums[nums.length - 1]; } }
-    push({ date, time, home: teams[0], away: teams[1], sh, sa });
+    push({ date, time, home: teams[0], away: teams[1], sh, sa, place });
   }
   if (!out.length) {
     // układ bez tabel: „2026-10-12 17:00” i dalej drużyna, wynik, drużyna, wynik
@@ -305,7 +314,7 @@ async function teamFromState(env, id) {
   const st = await env.CMS.get('cms:state', 'json');
   return st && Array.isArray(st.teams) ? st.teams.find(t => t.id === id) : null;
 }
-const PARSER_V = 4; // zmiana numeru = stary zapis terminarza w KV jest pobierany od nowa
+const PARSER_V = 5; // zmiana numeru = stary zapis terminarza w KV jest pobierany od nowa
 async function refresh(env, team) {
   const url = String(team.scheduleUrl || '').trim();
   if (!url) return { ok: true, matches: [], at: null };
