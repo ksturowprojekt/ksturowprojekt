@@ -155,7 +155,8 @@ Panel → Wizerunek → Tło strony (zdjęcia): włącznik, efekt (przenikanie l
 ### Turnieje (U10 i inne grupy minikoszykówki)
 - Drużyna → „📄 Wczytaj turniej z pliku PDF”: plik terminarza turnieju (nagłówek „Data | Format | Gospodarz | Uczestnicy | Godzina | Miejsce” + tabela meczów „Boisko 1 / Boisko 2”). Panel odczytuje datę, format, gospodarza, uczestników, godziny, miejsce i wszystkie mecze; turniej z tą samą datą i gospodarzem jest aktualizowany, nie dublowany. Można wybrać kilka plików naraz. Rozpoznawany jest też plan sezonu (wiele turniejów w jednej tabeli). Plik czytany jest w przeglądarce (biblioteka pdf.js z cdnjs).
 - Drużyna → lista „Turnieje”: ręczne dodawanie i poprawianie (mecze wiersz po wierszu: `11:30 · Boisko 1 · Drużyna A – Drużyna B · 24:18`).
-- Na stronie (Terminarz i wyniki): „Najbliższe turnieje” / „Rozegrane turnieje” z gospodarzem, uczestnikami i meczami naszej drużyny.
+- Na stronie (Terminarz i wyniki): „Najbliższe turnieje” / „Rozegrane turnieje” z gospodarzem, uczestnikami i blokiem „Nasze mecze — godziny i boiska”: tylko mecze PGE GiEK Turów Zgorzelec, w kolejności godzin, z numerem boiska i parą „kto z kim”.
+- Drużyna → „Skąd brać terminarz i wyniki” (każda drużyna): **Ze strony rozgrywek** — link do terminarza, mecze i wyniki aktualizują się same; **Z wgranego pliku PDF / wpisane ręcznie** — strona pokazuje listę „Turnieje”, automatyczne pobieranie jest wyłączone. Domyślnie U10 = plik, pozostałe drużyny = strona rozgrywek.
 - Drużyna → „Pokazuj wyniki meczów i turniejów” (każda drużyna): wyłączenie ukrywa punkty i oznaczenia W/P, zostają same terminy.
 - Drużyna → „Turnieje: pokazuj wszystkie turnieje ligi” — domyślnie tylko turnieje z udziałem naszej drużyny.
 
