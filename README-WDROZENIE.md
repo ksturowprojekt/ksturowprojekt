@@ -152,6 +152,13 @@ Sekcja „Harmonogram treningów” (dawniej „Treningi”): tydzień w kolumna
 ### Tło strony ze zdjęć
 Panel → Wizerunek → Tło strony (zdjęcia): włącznik, efekt (przenikanie lub przenikanie z powolnym przybliżeniem), tempo zmiany (5–15 s), kolejność (losowa / po kolei) i siła tła (delikatnie / średnio / wyraźnie). „+ Wybierz zdjęcia” dodaje wiele zdjęć naraz (zmniejszane do 1920 px). Zdjęcia stoją w miejscu podczas przewijania, a sekcje strony są lekko przezroczyste. Funkcja działa, gdy dodane jest co najmniej jedno zdjęcie.
 
+### Turnieje (U10 i inne grupy minikoszykówki)
+- Drużyna → „📄 Wczytaj turniej z pliku PDF”: plik terminarza turnieju (nagłówek „Data | Format | Gospodarz | Uczestnicy | Godzina | Miejsce” + tabela meczów „Boisko 1 / Boisko 2”). Panel odczytuje datę, format, gospodarza, uczestników, godziny, miejsce i wszystkie mecze; turniej z tą samą datą i gospodarzem jest aktualizowany, nie dublowany. Można wybrać kilka plików naraz. Rozpoznawany jest też plan sezonu (wiele turniejów w jednej tabeli). Plik czytany jest w przeglądarce (biblioteka pdf.js z cdnjs).
+- Drużyna → lista „Turnieje”: ręczne dodawanie i poprawianie (mecze wiersz po wierszu: `11:30 · Boisko 1 · Drużyna A – Drużyna B · 24:18`).
+- Na stronie (Terminarz i wyniki): „Najbliższe turnieje” / „Rozegrane turnieje” z gospodarzem, uczestnikami i meczami naszej drużyny.
+- Drużyna → „Pokazuj wyniki meczów i turniejów” (każda drużyna): wyłączenie ukrywa punkty i oznaczenia W/P, zostają same terminy.
+- Drużyna → „Turnieje: pokazuj wszystkie turnieje ligi” — domyślnie tylko turnieje z udziałem naszej drużyny.
+
 ### Facebook
 Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
 - **Wpisy w wyglądzie strony** (domyślnie): najpierw treść wpisu, zdjęcie pod spodem (albo nad — do wyboru), „Czytaj więcej” przy długich wpisach, liczba wpisów 1–20. Wpisy pobiera serwer strony co 15 minut, zdjęcia idą przez serwer strony (odwiedzający nie łączy się z Facebookiem — bez cookies, zgodnie z RODO). Wymaga **tokenu strony**.
