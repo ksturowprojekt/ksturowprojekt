@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mwmvgo6q">
+<html lang="de" data-base="../" data-site="https://ksturow.eu/" data-build="mwncuyd5">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -894,6 +894,8 @@ html.has-bg .spband{background:rgba(255,255,255,.96)}
 .ach-cols .ach-grp--hist+.ach-grp--pge{border-left:1px solid rgba(255,255,255,.14);padding-left:36px}
 .ach-cols .ach-grp--hist .ach{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
 }
+.brand__two b+b{margin-top:3px}
+.brand small.brand__sub--b{font-weight:700;color:var(--k)}
 
 </style>
 <script type="application/ld+json" id="ld">{"@context":"https://schema.org","@graph":[{"@type":"SportsClub","@id":"https://ksturow.eu/#klub","name":"KS Turów","sport":"Basketball","url":"https://ksturow.eu/de/","logo":"https://ksturow.eu/img/ks-turow-zgorzelec-logo-512.png","image":"https://ksturow.eu/img/og-image.jpg","description":"KS Turów – Basketballverein in Zgorzelec, Polnischer Meister 2014. Herrenteam, Nachwuchs U13–U17, Vereinsgeschichte und Sichtungen. Jetzt Kontakt aufnehmen!","address":{"@type":"PostalAddress","addressLocality":"Zgorzelec","addressCountry":"PL","streetAddress":"ul. Lubańska 9A","postalCode":"59-900"},"areaServed":[{"@type":"City","name":"Zgorzelec"},{"@type":"Country","name":"Polska"}],"telephone":"+48 534 788 402","hasMap":"https://www.google.com/maps/search/?api=1&query=KS%20Tur%C3%B3w%2C%20ul.%20Luba%C5%84ska%209A%2C%2059-900%2C%20Zgorzelec","sameAs":["https://www.facebook.com/ksturowsa"]},{"@type":"WebSite","@id":"https://ksturow.eu/#www","url":"https://ksturow.eu/","name":"KS Turów","inLanguage":"de","publisher":{"@id":"https://ksturow.eu/#klub"}}]}</script>
@@ -1483,7 +1485,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
   S.sections.facebook = { on: true, title: T('Aktualności z Facebooka', 'Latest from Facebook', 'Neues von Facebook'), intro: T('Najświeższe wpisy, zdjęcia i relacje z meczów prosto z profilu klubu.', 'The latest posts, photos and match reports straight from the club profile.', 'Die neuesten Beiträge, Fotos und Spielberichte direkt vom Vereinsprofil.') };
 
   /* ---------- Nazwa w nagłówku obok logo ---------- */
-  S.brand = { name: 'KS Turów', sub: T('Zgorzelec', 'Zgorzelec', 'Zgorzelec') };
+  S.brand = { name: 'KS Turów', sub: T('Zgorzelec', 'Zgorzelec', 'Zgorzelec'), subStyle: 'small' };
 
   /* ---------- INFORMACJE PRAKTYCZNE jako lista (nagłówek, treść, link) ---------- */
   (function () {
@@ -2305,8 +2307,9 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
     return section('informacje', 'sec--green', inner, on);
   };
   R.brand = function (S, ctx) {
-    var B = S.brand || {};
-    return '<img src="' + ctx.base + 'img/ks-turow-zgorzelec-logo-160.webp" width="52" height="52" alt="Logo ' + esc(B.name || 'KS Turów') + '"><span><b>' + esc(B.name || '') + '</b>' + (tr(B.sub, ctx.lang) ? '<small>' + esc(tr(B.sub, ctx.lang)) + '</small>' : '') + '</span>';
+    var B = S.brand || {}, sub = String(tr(B.sub, ctx.lang) || '').replace(/\*\*|__/g, '').trim(), st = B.subStyle || 'small';
+    var subH = !sub ? '' : st === 'same' ? '<b class="brand__l2">' + esc(sub) + '</b>' : '<small' + (st === 'bold' ? ' class="brand__sub--b"' : '') + '>' + esc(sub) + '</small>';
+    return '<img src="' + ctx.base + 'img/ks-turow-zgorzelec-logo-160.webp" width="52" height="52" alt="Logo ' + esc(B.name || 'KS Turów') + '"><span' + (st === 'same' && sub ? ' class="brand__two"' : '') + '><b>' + esc(B.name || '') + '</b>' + subH + '</span>';
   };
 
   function mapsUrl(S) {
@@ -5071,7 +5074,7 @@ gtag('consent','default',{analytics_storage:'denied'});gtag('js',new Date());gta
       ], 'youthCoord', 'Koordynator grup młodzieżowych') + '<section class="cmsp-card"><p class="cmsp-muted">Telefon i e-mail publikuj tylko za zgodą koordynatora. Zdjęcie i opis także można w każdej chwili wyłączyć.</p></section>';
     },
     home: function () {
-      return form([{ k: 'name', l: 'Nazwa w nagłówku obok logo (pogrubiona)', t: 'text', half: 1 }, { k: 'sub', l: 'Podpis pod nazwą (np. Zgorzelec) — puste = brak', t: 'text', i18n: 1 }], 'brand', 'Nagłówek strony — nazwa obok logo') + form([{ k: 'panelName', l: 'Nazwa klubu w górnym pasku panelu administratora (puste = taka sama jak w nagłówku strony)', t: 'text', ph: panelName() }], 'settings', 'Panel administratora — nazwa klubu') + form([
+      return form([{ k: 'name', l: 'Nazwa w nagłówku obok logo (pogrubiona)', t: 'text', half: 1 }, { k: 'sub', l: 'Podpis pod nazwą (np. Zgorzelec) — puste = brak', t: 'text', i18n: 1 }, { k: 'subStyle', l: 'Wygląd podpisu (drugiej linii)', t: 'select', opts: function () { return [['small', 'Mniejszy, zwykły (jak dotąd)'], ['bold', 'Mniejszy, pogrubiony'], ['same', 'Taki sam jak nazwa — ta sama wielkość, pogrubiony']]; } }], 'brand', 'Nagłówek strony — nazwa obok logo') + form([{ k: 'panelName', l: 'Nazwa klubu w górnym pasku panelu administratora (puste = taka sama jak w nagłówku strony)', t: 'text', ph: panelName() }], 'settings', 'Panel administratora — nazwa klubu') + form([
         { k: 'over', l: 'Nadtytuł', t: 'text', i18n: 1 },
         { k: 'title', l: 'Tytuł główny (nagłówek H1 — warto zostawić frazę „klub koszykarski” i miasto)', t: 'text', i18n: 1, h: '*słowo* = wyróżnienie kolorem' },
         { k: 'intro', l: 'Wprowadzenie', t: 'area', i18n: 1, h: FMT }], 'hero', 'Teksty pierwszego ekranu') +

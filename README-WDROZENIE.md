@@ -168,6 +168,9 @@ Panel → Wizerunek → Tło strony (zdjęcia): włącznik, efekt (przenikanie l
 - Panel → Osiągnięcia → „Podział osiągnięć na grupy”: nagłówki i opisy grup „Osiągnięcia PGE GiEK Turów” i „Historyczne osiągnięcia zgorzeleckiej koszykówki”, układ (domyślnie obok siebie: PGE GiEK Turów z lewej, historyczne obok; na telefonie jedna pod drugą), kolejność grup albo jedna wspólna lista. Na komputerze kolumna PGE GiEK Turów zostaje widoczna podczas przewijania długiej listy historycznej.
 - Grupę każdej pozycji wybiera się w „Edytuj → Grupa na stronie”. Pierwszy kafelek w każdej grupie jest duży.
 
+### Nazwa obok logo
+Panel → Nazwa w panelu → „Nagłówek strony — nazwa obok logo”: nazwa, podpis pod nazwą i „Wygląd podpisu”: mniejszy zwykły, mniejszy pogrubiony albo taki sam jak nazwa (ta sama wielkość, pogrubiony). Gwiazdki ** w podpisie są pomijane.
+
 ### Stopka strony
 Panel → Klub → Stopka strony: hasło, zdanie pod hasłem, logo, kolumna kontaktu (dane z „Dane kontaktowe”), linki do map i ikony profili, kolumna „Na skróty” (pozycje menu + własne dodatkowe linki, np. statut, regulamin), godziny biura, tekst praw autorskich (`{rok}` = bieżący rok), dodatkowa notka (np. nazwa spółki, NIP, KRS) oraz linki „Polityka prywatności” i „Panel administratora”. Każdy element można wyłączyć; nagłówki kolumn można zmienić. Podpis „Strona stworzona przez Strony AI Wrocław” jest stały.
 
