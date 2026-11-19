@@ -165,7 +165,7 @@ Panel → Wizerunek → Tło strony (zdjęcia): włącznik, efekt (przenikanie l
 - Przy pierwszym wczytaniu nowej wersji dawne rozdziały są zastępowane raz; zdjęcia i podpisy wgrane wcześniej w panelu przechodzą do odpowiadających im nowych rozdziałów. Potem wszystko edytuje się normalnie w „Historia klubu”.
 
 ### Osiągnięcia — dwie grupy
-- Panel → Osiągnięcia → „Podział osiągnięć na grupy”: nagłówki i opisy grup „Historyczne osiągnięcia zgorzeleckiej koszykówki” i „Osiągnięcia PGE GiEK Turów”, kolejność grup albo jedna wspólna lista.
+- Panel → Osiągnięcia → „Podział osiągnięć na grupy”: nagłówki i opisy grup „Osiągnięcia PGE GiEK Turów” i „Historyczne osiągnięcia zgorzeleckiej koszykówki”, układ (domyślnie obok siebie: PGE GiEK Turów z lewej, historyczne obok; na telefonie jedna pod drugą), kolejność grup albo jedna wspólna lista. Na komputerze kolumna PGE GiEK Turów zostaje widoczna podczas przewijania długiej listy historycznej.
 - Grupę każdej pozycji wybiera się w „Edytuj → Grupa na stronie”. Pierwszy kafelek w każdej grupie jest duży.
 
 ### Stopka strony
