@@ -160,6 +160,17 @@ Panel → Wizerunek → Tło strony (zdjęcia): włącznik, efekt (przenikanie l
 - Drużyna → „Pokazuj wyniki meczów i turniejów” (każda drużyna): wyłączenie ukrywa punkty i oznaczenia W/P, zostają same terminy.
 - Drużyna → „Turnieje: pokazuj wszystkie turnieje ligi” — domyślnie tylko turnieje z udziałem naszej drużyny.
 
+### Historia klubu (wersja z 19.11.2026)
+- Treść według tekstu klubu: 8 rozdziałów od 1948 (Górnik Turoszów) do 2026 (PGE GiEK Turów Zgorzelec), sezony oznaczone liniami „### 2006/2007”.
+- Przy pierwszym wczytaniu nowej wersji dawne rozdziały są zastępowane raz; zdjęcia i podpisy wgrane wcześniej w panelu przechodzą do odpowiadających im nowych rozdziałów. Potem wszystko edytuje się normalnie w „Historia klubu”.
+
+### Osiągnięcia — dwie grupy
+- Panel → Osiągnięcia → „Podział osiągnięć na grupy”: nagłówki i opisy grup „Historyczne osiągnięcia zgorzeleckiej koszykówki” i „Osiągnięcia PGE GiEK Turów”, kolejność grup albo jedna wspólna lista.
+- Grupę każdej pozycji wybiera się w „Edytuj → Grupa na stronie”. Pierwszy kafelek w każdej grupie jest duży.
+
+### Stopka strony
+Panel → Klub → Stopka strony: hasło, zdanie pod hasłem, logo, kolumna kontaktu (dane z „Dane kontaktowe”), linki do map i ikony profili, kolumna „Na skróty” (pozycje menu + własne dodatkowe linki, np. statut, regulamin), godziny biura, tekst praw autorskich (`{rok}` = bieżący rok), dodatkowa notka (np. nazwa spółki, NIP, KRS) oraz linki „Polityka prywatności” i „Panel administratora”. Każdy element można wyłączyć; nagłówki kolumn można zmienić. Podpis „Strona stworzona przez Strony AI Wrocław” jest stały.
+
 ### Facebook
 Panel → Wizerunek → Facebook → „Sposób wyświetlania wpisów”:
 - **Wpisy w wyglądzie strony** (domyślnie): najpierw treść wpisu, zdjęcie pod spodem (albo nad — do wyboru), „Czytaj więcej” przy długich wpisach, liczba wpisów 1–20. Wpisy pobiera serwer strony co 15 minut, zdjęcia idą przez serwer strony (odwiedzający nie łączy się z Facebookiem — bez cookies, zgodnie z RODO). Wymaga **tokenu strony**.
