@@ -160,6 +160,17 @@ Panel → Wizerunek → Tło strony (zdjęcia): włącznik, efekt (przenikanie l
 - Drużyna → „Pokazuj wyniki meczów i turniejów” (każda drużyna): wyłączenie ukrywa punkty i oznaczenia W/P, zostają same terminy.
 - Drużyna → „Turnieje: pokazuj wszystkie turnieje ligi” — domyślnie tylko turnieje z udziałem naszej drużyny.
 
+### Składy i terminarze z DZKosz — nowy układ serwisu (26.11.2026)
+- Linki wpisane w panelu (przy pierwszym wczytaniu nowej wersji, raz):
+  - U12 — skład: dzkosz.wroclaw.pl/liga/271/sezon/29/d/6870/…; terminarz z pliku Excel (bez zmian)
+  - U13 — skład: …/liga/270/sezon/29/d/6870/…; terminarz: ten sam adres z `?tab=schedule`
+  - U15 — skład: …/liga/268/sezon/29/d/6870/…; terminarz: ten sam adres z `?tab=schedule`
+  - U17 — skład: …/liga/383/sezon/29/d/6870/…; terminarz: centrum-meczow/liga?leagueId=383&tab=schedule&seasonId=29&section=meskie (cała liga, filtr „Turów”)
+- Terminarz i wyniki odświeżają się same co 3 godziny (`/api/schedule`), składy co 6 godzin (`/api/roster`, nowy plik funkcji).
+- Skład automatyczny (Drużyna → „Aktualizuj skład automatycznie…”): lista zawodników pochodzi z serwisu, a numery, zdjęcia, opisy i ukrycia wpisane w panelu zostają; nowi zawodnicy dochodzą, nieobecni w serwisie znikają ze strony. Zdjęcia z serwisu tylko przy zaznaczonej zgodzie na wizerunek.
+- Odporność na zmiany układu: odczyt szuka linków do meczów (…/mecz/…) i profili zawodników (…/zawodnicy/p/…) zamiast nazw klas CSS; ma też zapasowe metody (tabele, tekst strony). Strona sama próbuje innych wariantów adresu (zakładka „schedule”, terminarz całej ligi, zakładka składu). Gdy odczyt się nie uda, zostają ostatnie dobre dane.
+- Godzina „00.00” w serwisie = godzina jeszcze nieustalona — na stronie mecz jest bez godziny.
+
 ### Kontakt bez formularza (26.11.2026)
 - Formularz kontaktowy jest domyślnie wyłączony. Sekcja „Kontakt” pokazuje telefon, e-mail (kliknięcie otwiera program pocztowy), przycisk „Kopiuj adres e-mail” z podpowiedzią, adres, mapę obok i godziny biura.
 - Włączenie z powrotem: Panel → Formularz kontaktowy → „Pokazuj formularz kontaktowy na stronie”.

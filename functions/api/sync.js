@@ -24,6 +24,30 @@ const noKv = () => json({ ok: false, error: 'no-kv', message: 'Brak podpiętej b
 /* ---- wspólne: pobieranie i odczyt stron PZKosz / DZKosz / DALK (FIBA – Genius Sports) ---- */
 const ALLOWED = /(^|\.)(pzkosz\.pl|dzkosz\.wroclaw\.pl|dzkosz\.pl|dalk\.pl|geniussports\.com)$/i;
 function allowedUrl(u) { try { const x = new URL(u); return /^https?:$/.test(x.protocol) && ALLOWED.test(x.hostname); } catch (e) { return false; } }
+/* Serwis ESOR (DZKosz / PZKosz, nowy układ 2026): strona drużyny /liga/{L}/sezon/{S}/d/{klub}/… pokazuje
+   w HTML tylko aktywną zakładkę — skład bez parametru „tab”, terminarz z „?tab=schedule”.
+   Adres poprawiamy sami, więc działa także link wklejony z innej zakładki. */
+function esorTeam(url) {
+  let u; try { u = new URL(url); } catch (e) { return null; }
+  const m = /\/liga\/(\d+)\/(?:sezon\/(\d+)\/)?(?:druzyny\/)?d\/(\d+)/.exec(u.pathname);
+  return m ? { u, league: m[1], season: m[2] || '', club: m[3] } : null;
+}
+function rosterUrls(url) {
+  const t = esorTeam(url); if (!t) return [url];
+  const a = new URL(t.u); a.searchParams.delete('tab');
+  const b = new URL(t.u); b.searchParams.set('tab', 'roster');
+  return [...new Set([url, a.toString(), b.toString()])];
+}
+function scheduleUrls(url) {
+  const t = esorTeam(url); const out = [url];
+  if (t) {
+    const a = new URL(t.u); a.searchParams.set('tab', 'schedule'); out.push(a.toString());
+    if (t.season) out.push(t.u.origin + '/centrum-meczow/liga?leagueId=' + t.league + '&tab=schedule&seasonId=' + t.season);
+  } else {
+    try { const u = new URL(url); const L = u.searchParams.get('leagueId'), S = u.searchParams.get('seasonId'); if (L && !u.searchParams.get('tab')) { u.searchParams.set('tab', 'schedule'); out.push(u.toString()); } } catch (e) { }
+  }
+  return [...new Set(out)];
+}
 async function fetchPage(url) {
   const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KSTurowSite/1.0; +https://ksturow.eu)', 'Accept': 'text/html', 'Accept-Language': 'pl' }, cf: { cacheTtl: 300 } });
   if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -162,9 +186,29 @@ const POS_CODE = { pg: 'rozgrywający', sg: 'rzucający', sf: 'niski skrzydłowy
 const NAME_OK = /^[\p{L}][\p{L}'\-]+(\s+[\p{L}][\p{L}'\-]+)+$/u;
 
 /* skład: najpierw tabela (PZKosz), potem karty „Urodzony / Wzrost / Pozycja” (DZKosz) */
+/* karty zawodników: link do profilu (…/zawodnicy/p/{id}/…, …/zawodnik/…, …/player/…) — imię i nazwisko z nagłówka
+   lub pierwszej linii, dalej pola „Urodzony / Rocznik / Wzrost / Pozycja / Numer” w dowolnym układzie */
+function parseRosterCards(html) {
+  const out = [], h = stripNoise(html);
+  const re = /<a\b[^>]*href\s*=\s*"([^"]*\/(?:zawodnicy\/p|zawodnik|zawodniczki\/p|player|players)\/(\d+)[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi; let m;
+  while ((m = re.exec(h))) {
+    const inner = m[3], hd = /<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i.exec(inner);
+    const L = htmlToLines(inner), txt = L.join(' | ');
+    let name = hd ? clean(hd[1]) : (L.find(x => NAME_OK.test(x.replace(/^\d{1,2}\s+/, ''))) || '');
+    name = name.replace(/^#?\d{1,2}\s+/, '').trim();
+    if (!NAME_OK.test(name)) continue;
+    const by = /(?:Urodzon[ya]|Data urodzenia)\s*:?\s*\|?\s*([^|]+)/i.exec(txt), ry = /Rocznik\s*:?\s*\|?\s*(\d{4})/i.exec(txt);
+    const hg = /Wzrost\s*:?\s*\|?\s*(\d{2,3})/i.exec(txt), ps = /Pozycja\s*:?\s*\|?\s*([^|]+)/i.exec(txt), nu = /(?:Numer|Nr)\s*:?\s*\|?\s*#?(\d{1,2})\b|(?:^|\|)\s*#(\d{1,2})\s*(?:\||$)/i.exec(txt);
+    const year = by && isoDate(by[1]) ? +isoDate(by[1]).slice(0, 4) : (ry ? +ry[1] : '');
+    const pm = ps ? POS_RE.exec(ps[1]) : null;
+    out.push({ num: nu ? (nu[1] || nu[2]) : '', name: personName(name), year, height: hg ? hg[1] : '', pos: pm ? pm[0].toLocaleLowerCase('pl').replace(/\s*\/\s*/, ' / ') : (ps ? ps[1].trim().toLocaleLowerCase('pl') : '') });
+  }
+  return out;
+}
 function parseRoster(html) {
   const players = [], coaches = [], seen = {};
   function add(p) { const k = p.name.toLocaleLowerCase('pl'); if (!p.name || seen[k]) return; seen[k] = 1; players.push(p); }
+  parseRosterCards(html).forEach(add);
   let head = null;
   const HEAD = /^(no\.?|nr\.?|#|numer|name|player|players|player name|shirt number|shirt no\.?|role|zawodnik|zawodnicy|zawodniczka|imię i nazwisko|nazwisko i imię|nazwisko|imię)$/i;
   for (const cells of rows(html)) {
@@ -200,7 +244,7 @@ function parseRoster(html) {
   }
   // etykieta w osobnej linii („Urodzony:” / „13.01.2015”) → jedna linia
   const lines = [];
-  htmlToLines(html).forEach(l => { const prev = lines[lines.length - 1]; if (prev && /^(Urodzon[ya]|Wzrost|Pozycja|Numer|Nr)\s*:?$/i.test(prev)) lines[lines.length - 1] = prev + ' ' + l; else lines.push(l); });
+  htmlToLines(html).map(l => l.replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, '$3.$2.$1')).forEach(l => { const prev = lines[lines.length - 1]; if (prev && /^(Urodzon[ya]|Wzrost|Pozycja|Numer|Nr)\s*:?$/i.test(prev)) lines[lines.length - 1] = prev + ' ' + l; else lines.push(l); });
   const posOf = v => { const pm = POS_RE.exec(v); return pm ? pm[0].toLocaleLowerCase('pl').replace(/\s*\/\s*/, ' / ') : v.trim(); };
   // cała karta zawodnika w jednej linii, np. DZKosz: „13 Mikołaj Bębas Urodzony: 13.01.2015 Wzrost: 148 cm Pozycja: rozgrywający / rzucający”
   const ONE = /^(?:(\d{1,2})\s+)?([\p{L}][\p{L}'\-]+(?:\s+[\p{L}][\p{L}'\-]+){1,3})\s+Urodzon[ya]:?\s*(\d{1,2})\.(\d{1,2})\.(\d{4})(?:\s+Wzrost:?\s*(\d{2,3})?\s*(?:cm)?)?(?:\s+Pozycja:?\s*(.*))?$/iu;
@@ -259,7 +303,36 @@ function hm(s) {
   let h = +m[1]; if (m[3]) { const pm = /p/i.test(m[3]); if (pm && h < 12) h += 12; if (!pm && h === 12) h = 0; }
   return p2(h) + ':' + m[2];
 }
+// sama godzina w osobnej linii: „15:30” albo „15.30” (00.00 / 00:00 = godzina nieznana)
+function timeOnly(s) { const m = /^([01]?\d|2[0-3])[:.]([0-5]\d)(\s*[AaPp]\.?[Mm]\.?)?$/.exec(String(s).trim()); if (!m) return null; const t = hm(m[1] + ':' + m[2] + (m[3] || '')); return t === '00:00' ? '' : t; }
+/* karty meczów: link do strony meczu (…/mecz/…, …/game/…, …/match/…) zawiera datę, godzinę, obie drużyny i wynik —
+   odczyt nie zależy od nazw klas CSS ani kolejności bloków na stronie */
+function parseMatchCards(html, filter) {
+  const out = [], key = (filter || '').toLocaleLowerCase('pl');
+  const h = stripNoise(html);
+  const re = /<a\b[^>]*href\s*=\s*"([^"]*\/(?:mecz|game|games|match|spotkanie)\/[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi; let m;
+  while ((m = re.exec(h))) {
+    const L = htmlToLines(m[2]); let date = '', time = '', teams = [], sc = [];
+    for (const x of L) {
+      if (!date && isoDate(x)) { date = isoDate(x); const t = hm(x.replace(/\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4}/, '')); if (t && t !== '00:00') time = t; continue; }
+      const t = timeOnly(x); if (t !== null) { if (!time) time = t; continue; }
+      const s2 = /^(\d{1,3})\s*[:\-–]\s*(\d{1,3})$/.exec(x); if (s2) { sc.push(s2[1], s2[2]); continue; }
+      if (/^\d{1,3}$/.test(x)) { sc.push(x); continue; }
+      if (/^[–—\-]$/.test(x)) continue;
+      const tm = /^(.+?)\s+(\d{1,3})$/.exec(x);
+      if (tm && /\p{L}{3,}/u.test(tm[1]) && !/^(kolejka|runda|mecz|game|round)\b/i.test(tm[1])) { teams.push(tm[1].trim()); sc.push(tm[2]); continue; }
+      if (/\p{L}{3,}/u.test(x) && x.length <= 70 && !/^(kolejka|runda|mecz nr|szczegó|relacja|statyst|protokół|box score|live|bilety|zakończ|final|vs\.?|v)\b/i.test(x)) teams.push(x);
+    }
+    if (!date || teams.length < 2) continue;
+    const home = teams[0], away = teams[1];
+    if (key && !(home + ' ' + away).toLocaleLowerCase('pl').includes(key)) continue;
+    const sh = sc.length >= 2 ? sc[0] : '', sa = sc.length >= 2 ? sc[1] : '';
+    if (!out.some(x => x.date === date && x.home === home && x.away === away)) out.push({ date, time, home, away, sh, sa, place: '' });
+  }
+  return out.sort((a, b) => (a.date + a.time < b.date + b.time ? -1 : 1));
+}
 function parseSchedule(html, filter) {
+  const cards = parseMatchCards(html, filter); if (cards.length) return cards;
   const out = [], key = (filter || 'Turów').toLocaleLowerCase('pl');
   function push(m) { if (!m.date || !m.home || !m.away) return; if (key && !(m.home + ' ' + m.away).toLocaleLowerCase('pl').includes(key)) return; if (!out.some(x => x.date === m.date && x.home === m.home && x.away === m.away)) out.push(m); }
   const teamCell = c => /\p{L}{3,}/u.test(c) && !isoDate(c) && !/^(hala|arena|sala|venue|ul\.|final|zakończ|box score|statyst|szczeg|relacja|live|bilety|tickets|mecz nr|game)/i.test(c) && !DATE_RE.test(c) && !/^\d{4}-\d{2}-\d{2}/.test(c) && !/^(kolejka|runda|mecz|hala|szczegóły|relacja|statystyki|protokół|wynik|data|godz\.?|godzina|gospodarz|gość|dom|wyjazd|kol\.?)$/i.test(c) && c.length <= 60;
@@ -295,11 +368,12 @@ function parseSchedule(html, filter) {
     const L = htmlToLines(html);
     for (let i = 0; i < L.length; i++) {
       const date = isoDate(L[i]); if (!date) continue;
-      const tNext = !hm(L[i]) && /^([01]?\d|2[0-3]):[0-5]\d(\s*[AaPp]\.?[Mm]\.?)?$/.test(L[i + 1] || '');
-      const tm = hm(L[i]) || (tNext ? hm(L[i + 1]) : '');
+      const tNext = !hm(L[i]) && timeOnly(L[i + 1] || '') !== null;
+      const tm = hm(L[i]) || (tNext ? timeOnly(L[i + 1]) : '');
       const nxt = L.slice(i + (tNext ? 2 : 1), i + (tNext ? 10 : 9)); const t = [], s = [];
       let skip = false;
       for (const x0 of nxt) { if (skip) { skip = false; continue; } if (/^(venue|hala|miejsce|arena|lokalizacja|obiekt|sala)\s*[:/]?\s*$/i.test(x0)) { skip = true; continue; } if (isoDate(x0)) break; const sx = SCORE.exec(x0); if (sx) { s.push(sx[1], sx[2]); if (t.length >= 2) break; continue; }
+        if (/^[–—\-]$/.test(x0)) continue;
         const parts = splitTeams(x0); if (parts.length === 2) { t.push(parts[0], parts[1]); continue; } const x = x0; const ms = /^(.+?)\s+(\d{1,3})$/.exec(x); if (ms && teamCell(ms[1])) { t.push(ms[1]); s.push(ms[2]); } else if (/^\d{1,3}$/.test(x)) s.push(x); else if (teamCell(x)) t.push(x); if (t.length >= 2 && s.length >= 2) break; }
       if (t.length >= 2) push({ date, time: tm, home: t[0], away: t[1], sh: s[0] || '', sa: s[1] || '' });
     }
@@ -307,6 +381,26 @@ function parseSchedule(html, filter) {
   return out.sort((a, b) => (a.date + a.time < b.date + b.time ? -1 : 1));
 }
 
+/* skład: próbujemy podany adres, a gdy nic nie znaleziono — ten sam adres z inną zakładką (układ strony mógł się zmienić) */
+async function rosterFrom(url) {
+  const g = await geniusRoster(url); if (g) return { html: g, r: parseRoster(g), url };
+  let last = { html: '', r: { players: [], coaches: [] }, url }, err = null;
+  for (const u of rosterUrls(url)) {
+    try { const html = await resolvePage(u), r = parseRoster(html); if (r.players.length) return { html, r, url: u }; if (!last.html) last = { html, r, url: u }; } catch (e) { err = err || e; }
+  }
+  if (!last.html && err) throw err;
+  return last;
+}
+/* terminarz: podany adres, potem warianty (zakładka „schedule”, terminarz całej ligi z filtrem drużyny) */
+async function scheduleFrom(url, filter) {
+  const g = await geniusSchedule(url, filter); if (g) return g;
+  let err = null, any = false;
+  for (const u of scheduleUrls(url)) {
+    try { const m = parseSchedule(await resolvePage(u), filter); any = true; if (m.length) return m; } catch (e) { err = err || e; }
+  }
+  if (!any && err) throw err;
+  return [];
+}
 /* POST /api/sync  { url } — pobiera skład drużyny ze strony PZKosz / DZKosz (tylko dla zalogowanego administratora)
    Zwraca listę zawodników i trenerów; porównanie i decyzję co dodać/usunąć podejmuje panel. */
 /* ---- zdjęcia zawodników (system ESOR: PZKosz / DZKosz) ----
@@ -316,7 +410,7 @@ function keyName(n) { return String(n || '').toLocaleLowerCase('pl').normalize('
 async function rosterPhotos(html, pageUrl) {
   const out = {}, coach = {};
   const abs = u => { try { return new URL(u.startsWith('//') ? 'https:' + u : u, pageUrl).toString(); } catch (e) { return ''; } };
-  const photos = t => String(t).match(PHOTO_RE) || [];
+  const photos = t => { t = String(t); let d = t; try { d = t.replace(/%(2F|3A|25)/gi, (x, c) => decodeURIComponent('%' + c)); } catch (e) { } return [...new Set((t.match(PHOTO_RE) || []).concat(d.match(PHOTO_RE) || []))].map(u => u.replace(/&amp;.*$/, '').replace(/[&?]w=\d+.*$/, '')); };
   const nameOf = frag => { const h = /<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i.exec(frag); return h ? clean(h[1]) : ''; };
   for (const m of String(html).matchAll(/<tr[\s\S]*?<\/tr>/gi)) {
     const ph = photos(m[0])[0]; if (!ph) continue;
@@ -325,7 +419,7 @@ async function rosterPhotos(html, pageUrl) {
     if (name) (/\/trenerzy\//.test(ph) ? coach : out)[keyName(personName(name))] = abs(ph);
   }
   const links = [];
-  for (const m of String(html).matchAll(/<a\b[^>]*href\s*=\s*"([^"]*\/zawodnicy\/p\/(\d+)\/[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi)) {
+  for (const m of String(html).matchAll(/<a\b[^>]*href\s*=\s*"([^"]*\/(?:zawodnicy\/p|zawodnik|player)\/(\d+)[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi)) {
     const name = nameOf(m[3]) || clean(m[3].replace(/Urodzon[\s\S]*/i, '')).replace(/^\d+\s+/, '');
     if (!name) continue;
     const k = keyName(personName(name)); if (out[k]) continue;
@@ -354,10 +448,9 @@ export async function onRequestPost({ request, env }) {
   const url = String(b.url || '').trim();
   if (!allowedUrl(url)) return json({ ok: false, error: 'url', message: 'Dozwolone są tylko adresy serwisów PZKosz, DZKosz i DALK.' }, 400);
   try {
-    const html = (await geniusRoster(url)) || await resolvePage(url);
-    const r = parseRoster(html);
+    const got = await rosterFrom(url), html = got.html, r = got.r;
     if (!r.players.length) return json({ ok: false, error: 'empty', message: 'Nie znaleziono zawodników na tej stronie — układ strony mógł się zmienić.' }, 422);
-    if (b.photos) { try { const ph = await rosterPhotos(html, url); r.players.forEach(p => { const k = keyName(p.name); if (ph[k]) p.photo = ph[k]; }); r.coaches.forEach(c => { const k = keyName(c.name); if (ph._coaches[k]) c.photo = ph._coaches[k]; }); } catch (e) { } }
+    if (b.photos) { try { const ph = await rosterPhotos(html, got.url); r.players.forEach(p => { const k = keyName(p.name); if (ph[k]) p.photo = ph[k]; }); r.coaches.forEach(c => { const k = keyName(c.name); if (ph._coaches[k]) c.photo = ph._coaches[k]; }); } catch (e) { } }
     return json({ ok: true, url, fetchedAt: new Date().toISOString(), players: r.players, coaches: r.coaches });
   } catch (e) {
     return json({ ok: false, error: 'fetch', message: 'Nie udało się pobrać strony: ' + (e && e.message || e) }, 502);
