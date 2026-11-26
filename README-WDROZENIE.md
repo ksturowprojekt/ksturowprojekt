@@ -174,6 +174,7 @@ Panel → Wizerunek → Tło strony (zdjęcia): włącznik, efekt (przenikanie l
 ### Kontakt bez formularza (26.11.2026)
 - Formularz kontaktowy jest domyślnie wyłączony. Sekcja „Kontakt” pokazuje telefon, e-mail (kliknięcie otwiera program pocztowy), przycisk „Kopiuj adres e-mail” z podpowiedzią, adres, mapę obok i godziny biura.
 - Włączenie z powrotem: Panel → Formularz kontaktowy → „Pokazuj formularz kontaktowy na stronie”.
+- Link „Polityka prywatności” (przy formularzu i w stopce) jest widoczny tylko przy włączonym formularzu. Po zaznaczeniu „Pokazuj formularz…” panel od razu przechodzi do „Polityka prywatności” i wyświetla komunikat o obowiązku jej uzupełnienia (RODO, art. 13) z listą wymaganych informacji.
 
 ### U10 i U12 — terminarz z Excela, widok „najbliższe rozgrywki”
 - Wpisane z pliku klubu: U10 — zakładka U10M (15 turniejów od 17.10.2026), U12 — zakładka U12M od 07.11.2026 (16 turniejów). Drużyna U12 została dodana (jeśli w panelu była już drużyna „U12”, dostała te dane).
