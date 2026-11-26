@@ -160,6 +160,16 @@ Panel → Wizerunek → Tło strony (zdjęcia): włącznik, efekt (przenikanie l
 - Drużyna → „Pokazuj wyniki meczów i turniejów” (każda drużyna): wyłączenie ukrywa punkty i oznaczenia W/P, zostają same terminy.
 - Drużyna → „Turnieje: pokazuj wszystkie turnieje ligi” — domyślnie tylko turnieje z udziałem naszej drużyny.
 
+### Kontakt bez formularza (26.11.2026)
+- Formularz kontaktowy jest domyślnie wyłączony. Sekcja „Kontakt” pokazuje telefon, e-mail (kliknięcie otwiera program pocztowy), przycisk „Kopiuj adres e-mail” z podpowiedzią, adres, mapę obok i godziny biura.
+- Włączenie z powrotem: Panel → Formularz kontaktowy → „Pokazuj formularz kontaktowy na stronie”.
+
+### U10 i U12 — terminarz z Excela, widok „najbliższe rozgrywki”
+- Wpisane z pliku klubu: U10 — zakładka U10M (15 turniejów od 17.10.2026), U12 — zakładka U12M od 07.11.2026 (16 turniejów). Drużyna U12 została dodana (jeśli w panelu była już drużyna „U12”, dostała te dane).
+- Na stronie (Terminarz → zakładka U10/U12) widać tylko najbliższy termin: data, „za N dni”, format, a dla każdego turnieju tego dnia — gospodarz i lista grających zespołów (bez wyróżniania Turowa). Przy turnieju „Wszystkie zespoły” lista powstaje ze wszystkich drużyn z terminarza. Po minięciu daty strona sama pokazuje kolejny termin.
+- Panel → drużyna → „Turnieje: co pokazywać na stronie”: tylko najbliższy termin albo pełna lista turniejów.
+- Nowy terminarz: Panel → drużyna → „📄 Wczytaj terminarz z pliku (Excel lub PDF)”. Z pliku .xlsx brana jest zakładka o nazwie drużyny (U10 → U10M, U12 → U12M); wiersze z nagłówkiem „Data | Format | Gospodarz | Uczestnicy” są dopisywane, a te same daty i gospodarze — aktualizowane.
+
 ### Historia klubu (wersja z 19.11.2026)
 - Treść według tekstu klubu: 8 rozdziałów od 1948 (Górnik Turoszów) do 2026 (PGE GiEK Turów Zgorzelec), sezony oznaczone liniami „### 2006/2007”.
 - Przy pierwszym wczytaniu nowej wersji dawne rozdziały są zastępowane raz; zdjęcia i podpisy wgrane wcześniej w panelu przechodzą do odpowiadających im nowych rozdziałów. Potem wszystko edytuje się normalnie w „Historia klubu”.
